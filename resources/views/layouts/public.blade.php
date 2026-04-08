@@ -35,10 +35,27 @@
 
         <nav class="hidden md:flex gap-6 text-sm font-medium">
             <a href="{{ route('home') }}">Beranda</a>
-            <a href="{{ route('public.pengajuan.create') }}">Pengajuan KGB</a>
-            <a href="{{ route('public.status.index') }}">Cek Registrasi</a>
-            <a href="{{ route('public.sk.index') }}">SK KGB</a>
-            <a href="{{ route('login') }}">Admin</a>
+
+            @php
+                $pegawaiLoggedIn = Auth::guard('pegawai')->check();
+                $adminLoggedIn = Auth::guard('web')->check();
+            @endphp
+
+            {{-- Pengajuan KGB: jika sudah login pegawai langsung ke form, jika belum ke halaman login pegawai --}}
+            @if ($pegawaiLoggedIn)
+                <a href="{{ route('pegawai.pengajuan.create') }}">Pengajuan KGB</a>
+            @else
+                <a href="{{ route('pegawai.login') }}">Pengajuan KGB</a>
+            @endif
+
+            {{-- Tombol login / dashboard sesuai role --}}
+            @if ($pegawaiLoggedIn)
+                <a href="{{ route('pegawai.dashboard') }}">Dashboard Pegawai</a>
+            @elseif ($adminLoggedIn)
+                <a href="{{ route('admin.dashboard') }}">Dashboard Admin</a>
+            @else
+                <a href="{{ route('login') }}">Login</a>
+            @endif
         </nav>
     </div>
 </header>
@@ -76,9 +93,13 @@
         <div>
             <h3 class="font-semibold text-lg mb-3">Menu</h3>
             <ul class="space-y-2 text-sm">
-                <li><a href="{{ route('public.pengajuan.create') }}">Pengajuan KGB</a></li>
-                <li><a href="{{ route('public.status.index') }}">Cek Registrasi</a></li>
-                <li><a href="{{ route('public.sk.index') }}">SK KGB</a></li>
+                @if ($pegawaiLoggedIn ?? false)
+                    <li><a href="{{ route('pegawai.pengajuan.create') }}">Pengajuan KGB</a></li>
+                    <li><a href="{{ route('pegawai.dashboard') }}">Dashboard Pegawai</a></li>
+                @else
+                    <li><a href="{{ route('pegawai.login') }}">Pengajuan KGB</a></li>
+                    <li><a href="{{ route('login') }}">Login</a></li>
+                @endif
             </ul>
         </div>
         <div>
@@ -88,5 +109,7 @@
         </div>
     </div>
 </footer>
+
+    @stack('scripts')
 </body>
 </html>

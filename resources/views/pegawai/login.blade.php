@@ -1,12 +1,12 @@
 @extends('layouts.auth')
 
-@section('title', 'Login KGB Online')
+@section('title', 'Login Pegawai KGB')
 
 @section('content')
 <div class="mb-8">
-    <h2 class="text-3xl font-bold text-gray-800">Login</h2>
+    <h2 class="text-3xl font-bold text-gray-800">Login Pegawai</h2>
     <p class="text-sm text-gray-500 mt-2">
-        Masukkan <span class="font-semibold">Email (untuk admin)</span> atau <span class="font-semibold">NIP (untuk pegawai)</span> beserta password.
+        Masukkan NIP dan password untuk mengajukan Kenaikan Gaji Berkala.
     </p>
 </div>
 
@@ -26,21 +26,21 @@
     </div>
 @endif
 
-<form method="POST" action="{{ route('login') }}" class="space-y-5">
+<form method="POST" action="{{ route('pegawai.login') }}" class="space-y-5">
     @csrf
 
     <div>
-        <label for="login" class="block text-sm font-semibold text-gray-700 mb-2">Email / NIP</label>
+        <label for="nip" class="block text-sm font-semibold text-gray-700 mb-2">NIP</label>
         <input
-            id="login"
+            id="nip"
             type="text"
-            name="login"
-            value="{{ old('login') }}"
+            name="nip"
+            value="{{ old('nip') }}"
             required
             autofocus
             autocomplete="username"
             class="auth-input w-full border border-gray-300 rounded-xl px-4 py-3"
-            placeholder="Masukkan email admin atau NIP pegawai"
+            placeholder="Masukkan NIP"
         >
     </div>
 
@@ -67,11 +67,9 @@
             <span class="ml-2 text-sm text-gray-600">Ingat saya</span>
         </label>
 
-        @if (Route::has('password.request'))
-            <a href="{{ route('password.request') }}" class="text-sm text-orange-600 hover:underline">
-                Lupa password?
-            </a>
-        @endif
+        <a href="{{ route('home') }}" class="text-sm text-gray-500 hover:text-orange-600">
+            Kembali ke beranda
+        </a>
     </div>
 
     <button
@@ -80,11 +78,6 @@
     >
         Masuk
     </button>
-
-    <div class="text-center">
-        <a href="{{ route('home') }}" class="text-sm text-gray-500 hover:text-orange-600">
-            Kembali ke beranda
-        </a>
-    </div>
 </form>
 @endsection
+

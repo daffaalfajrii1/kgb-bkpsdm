@@ -45,7 +45,6 @@ class PublicStatusController extends Controller
             $keyword = $request->keyword;
 
             $query->where('nomor_registrasi', $keyword)
-                ->orWhere('nip', $keyword)
                 ->orWhere('nama', 'like', '%'.$keyword.'%');
         }
 

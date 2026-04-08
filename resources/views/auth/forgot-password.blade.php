@@ -2,7 +2,7 @@
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Lupa Password</h2>
         <p class="text-sm text-gray-500 mt-1">
-            Masukkan email admin. Kami akan mengirimkan link reset password jika fitur email aktif.
+            Masukkan email aktif akun Anda (admin atau pegawai). Kami akan mengirimkan link reset password ke email tersebut.
         </p>
     </div>
 

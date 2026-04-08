@@ -21,7 +21,6 @@
                             <th class="text-left px-6 py-4">No</th>
                             <th class="text-left px-6 py-4">No Registrasi</th>
                             <th class="text-left px-6 py-4">Nama</th>
-                            <th class="text-left px-6 py-4">NIP</th>
                             <th class="text-left px-6 py-4">Tanggal Upload</th>
                             <th class="text-left px-6 py-4">Aksi</th>
                         </tr>
@@ -32,7 +31,6 @@
                                 <td class="px-6 py-4">{{ $items->firstItem() + $loop->index }}</td>
                                 <td class="px-6 py-4">{{ $item->nomor_registrasi ?: '-' }}</td>
                                 <td class="px-6 py-4">{{ $item->nama }}</td>
-                                <td class="px-6 py-4">{{ $item->nip }}</td>
                                 <td class="px-6 py-4">{{ $item->tanggal_upload ? \Carbon\Carbon::parse($item->tanggal_upload)->format('d-m-Y') : '-' }}</td>
                                 <td class="px-6 py-4">
                                     <a href="{{ route('public.sk.download', $item->id) }}" class="text-orange-600 font-semibold">Unduh PDF</a>

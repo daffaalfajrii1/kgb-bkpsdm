@@ -11,7 +11,7 @@
                 Ajukan berkas Kenaikan Gaji Berkala, cek nomor registrasi, dan unduh SK Kenaikan Gaji Berkala .
             </p>
             <div class="flex flex-wrap gap-4">
-                <a href="{{ route('public.pengajuan.create') }}" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold">Ajukan KGB</a>
+                <a href="{{ route('pegawai.login') }}" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold">Ajukan KGB</a>
                 <a href="{{ route('public.status.index') }}" class="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold">Cek Registrasi</a>
             </div>
         </div>
@@ -34,6 +34,59 @@
     </div>
 </section>
 
+<section class="py-16 bg-gray-50 border-y border-gray-200">
+    <div class="max-w-4xl mx-auto px-4">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-gray-800 mb-3">Informasi Syarat Kenaikan Gaji Berkala</h2>
+            <div class="w-20 h-1 bg-orange-500 mx-auto mb-4"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md p-8 md:p-10 text-gray-700 leading-relaxed space-y-6">
+            <p class="text-base md:text-lg text-gray-800">
+                Kenaikan gaji berkala (KGB) bagi Pegawai Negeri Sipil (PNS) / PPPK diatur oleh peraturan pemerintah dan memerlukan beberapa syarat utama untuk diajukan.
+            </p>
+
+            <div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span class="text-orange-500"><i class="fas fa-clipboard-list"></i></span>
+                    Syarat Umum Kenaikan Gaji Berkala
+                </h3>
+                <ol class="list-decimal list-outside pl-5 md:pl-6 space-y-4 marker:text-orange-500 marker:font-semibold">
+                    <li>
+                        <span class="font-medium text-gray-900">Masa kerja</span> — PNS/PPPK harus telah mencapai masa kerja minimum dua tahun sejak kenaikan gaji terakhir.
+                    </li>
+                    <li>
+                        <span class="font-medium text-gray-900">Penilaian kinerja</span> — PNS/PPPK harus memiliki penilaian kinerja yang baik, yang dibuktikan dengan dokumen Sasaran Kerja Pegawai (SKP).
+                    </li>
+                    <li>
+                        <span class="font-medium text-gray-900">Status aktif</span> — PNS/PPPK harus masih berstatus aktif dan tidak sedang menjalani hukuman disiplin.
+                    </li>
+                    <li>
+                        PNS yang sedang cuti di luar tanggungan negara atau diberhentikan sementara tidak berhak mendapatkan KGB.
+                    </li>
+                    <li>
+                        <span class="font-medium text-gray-900">Dokumen pendukung</span> — Dokumen yang diperlukan untuk pengajuan KGB meliputi:
+                        <ul class="mt-3 list-disc list-outside pl-5 space-y-2 text-gray-700">
+                            <li>Surat pengantar yang ditandatangani oleh Kepala OPD/Instansi</li>
+                            <li>Surat Keputusan (SK) CPNS</li>
+                            <li>SK pangkat terakhir</li>
+                            <li>SK berkala terakhir</li>
+                            <li>SKP 1 tahun terakhir</li>
+                        </ul>
+                        <p class="mt-4 rounded-lg bg-orange-50 border border-orange-100 px-4 py-3 text-sm text-gray-800">
+                            <i class="fas fa-file-pdf text-orange-600 mr-2"></i>
+                            Dokumen pendukung dapat diunggah dalam format <strong>PDF</strong> (maksimal <strong>1 MB</strong> per berkas).
+                        </p>
+                    </li>
+                    <li>
+                        <span class="font-medium text-gray-900">Waktu pengajuan</span> — Daftar usulan diajukan <strong>2 bulan sebelum</strong> TMT berkala berikutnya.
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-12">
@@ -47,7 +100,7 @@
                 <div class="text-orange-500 text-4xl mb-4"><i class="fas fa-file-circle-plus"></i></div>
                 <h3 class="text-xl font-semibold mb-2 text-gray-800">Pengajuan KGB</h3>
                 <p class="text-gray-600 mb-4">Isi form pengajuan dan unggah seluruh berkas persyaratan secara online.</p>
-                <a href="{{ route('public.pengajuan.create') }}" class="text-orange-500 font-medium">Buka Form</a>
+                <a href="{{ route('pegawai.login') }}" class="text-orange-500 font-medium">Buka Form</a>
             </div>
 
             <div class="service-card bg-white p-6 rounded-xl shadow-md">

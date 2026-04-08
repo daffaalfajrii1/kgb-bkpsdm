@@ -28,6 +28,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Arahkan sesuai role / guard yang berhasil login
+        if (Auth::guard('pegawai')->check()) {
+            return redirect()->intended(route('pegawai.dashboard', absolute: false));
+        }
+
         return redirect()->intended(route('admin.dashboard', absolute: false));
     }
 
@@ -36,7 +41,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Logout dari kedua guard jika ada
         Auth::guard('web')->logout();
+        Auth::guard('pegawai')->logout();
 
         $request->session()->invalidate();
 

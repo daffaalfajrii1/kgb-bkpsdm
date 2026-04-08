@@ -54,6 +54,13 @@
                     </li>
 
                     <li class="nav-item">
+                        <a href="{{ route('admin.admins.index') }}" class="nav-link {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-user-shield"></i>
+                            <p>Kelola Admin</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="{{ route('admin.pengajuan.index') }}" class="nav-link {{ request()->routeIs('admin.pengajuan.index') || request()->routeIs('admin.pengajuan.show') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-file-lines"></i>
                             <p>Data Pengajuan</p>
