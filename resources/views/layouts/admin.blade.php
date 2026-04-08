@@ -8,6 +8,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    @stack('styles')
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -61,9 +62,23 @@
                     </li>
 
                     <li class="nav-item">
+                        <a href="{{ route('admin.pegawai.index') }}" class="nav-link {{ request()->routeIs('admin.pegawai.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Manajemen Pegawai</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="{{ route('admin.pengajuan.index') }}" class="nav-link {{ request()->routeIs('admin.pengajuan.index') || request()->routeIs('admin.pengajuan.show') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-file-lines"></i>
                             <p>Data Pengajuan</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('admin.disiplin.index') }}" class="nav-link {{ request()->routeIs('admin.disiplin.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-user-lock"></i>
+                            <p>Manajemen Disiplin</p>
                         </a>
                     </li>
 
@@ -130,5 +145,6 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+@stack('scripts')
 </body>
 </html>

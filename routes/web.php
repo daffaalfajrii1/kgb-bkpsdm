@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\HasilKgbController;
+use App\Http\Controllers\Admin\AdminPegawaiController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminDisiplinPegawaiController;
 use App\Http\Controllers\Admin\PengajuanController;
 use App\Http\Controllers\Pegawai\PegawaiAuthController;
 use App\Http\Controllers\Pegawai\PegawaiDashboardController;
@@ -42,7 +44,14 @@ Route::get('/sk-kgb/download/{hasilKgb}', [PublicStatusController::class, 'downl
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [PengajuanController::class, 'dashboard'])->name('dashboard');
 
+    Route::get('/pegawai/template', [AdminPegawaiController::class, 'template'])->name('pegawai.template');
+    Route::post('/pegawai/import', [AdminPegawaiController::class, 'import'])->name('pegawai.import');
+    Route::post('/pegawai/{pegawai}/reset-password', [AdminPegawaiController::class, 'resetPassword'])->name('pegawai.reset-password');
+    Route::resource('pegawai', AdminPegawaiController::class)->except(['show']);
+
     Route::resource('admins', AdminUserController::class)->except(['show']);
+
+    Route::resource('disiplin', AdminDisiplinPegawaiController::class)->except(['show']);
 
     Route::get('/pengajuan', [PengajuanController::class, 'index'])->name('pengajuan.index');
     Route::get('/pengajuan/diproses', [PengajuanController::class, 'diproses'])->name('pengajuan.diproses');

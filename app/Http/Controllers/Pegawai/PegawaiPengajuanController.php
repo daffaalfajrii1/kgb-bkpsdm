@@ -55,7 +55,7 @@ class PegawaiPengajuanController extends Controller
             'nama' => $user->name,
             'nip' => $user->nip,
             'dinas_instansi' => $user->dinas_instansi,
-            'pangkat_terakhir' => $user->pangkat_terakhir,
+            'pangkat_terakhir' => $user->gol_pangkat ?? $user->pangkat_terakhir,
             'tmt_berkala_berikutnya' => $validated['tmt_berkala_berikutnya'],
             'status' => 'diajukan',
             'surat_pengantar_skpd' => $request->file('surat_pengantar_skpd')->store('pengajuan', 'public'),

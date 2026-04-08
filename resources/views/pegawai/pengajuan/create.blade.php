@@ -40,8 +40,8 @@
                         </div>
 
                         <div>
-                            <div class="text-gray-500 mb-1">Pangkat Terakhir</div>
-                            <div class="font-medium">{{ $user->pangkat_terakhir ?? '-' }}</div>
+                            <div class="text-gray-500 mb-1">Gol. / Pangkat</div>
+                            <div class="font-medium">{{ $user->gol_pangkat ?? $user->pangkat_terakhir ?? '-' }}</div>
                         </div>
 
                         <div class="md:col-span-2 mt-4">

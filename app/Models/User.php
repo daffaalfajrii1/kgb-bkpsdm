@@ -26,6 +26,11 @@ class User extends Authenticatable
         'nip',
         'dinas_instansi',
         'pangkat_terakhir',
+        'gol_pangkat',
+        'tmt_golongan',
+        'mk_tahun',
+        'mk_bulan',
+        'tmt_jabatan',
         'alamat',
         'gelar_depan',
         'gelar_belakang',
@@ -51,6 +56,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'tmt_golongan' => 'date',
+            'tmt_jabatan' => 'date',
         ];
     }
 }

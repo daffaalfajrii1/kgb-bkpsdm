@@ -62,8 +62,26 @@
                         <div class="font-medium">{{ $user->dinas_instansi ?? '-' }}</div>
                     </div>
                     <div>
-                        <div class="text-gray-500">Pangkat Terakhir</div>
-                        <div class="font-medium">{{ $user->pangkat_terakhir ?? '-' }}</div>
+                        <div class="text-gray-500">Gol. / Pangkat</div>
+                        <div class="font-medium">{{ $user->gol_pangkat ?? $user->pangkat_terakhir ?? '-' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-gray-500">TMT Golongan</div>
+                        <div class="font-medium">{{ $user->tmt_golongan?->format('d/m/Y') ?? '-' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-gray-500">Masa kerja</div>
+                        <div class="font-medium">
+                            @if ($user->mk_tahun !== null || $user->mk_bulan !== null)
+                                {{ (int) ($user->mk_tahun ?? 0) }} th {{ (int) ($user->mk_bulan ?? 0) }} bln
+                            @else
+                                -
+                            @endif
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-gray-500">TMT Jabatan</div>
+                        <div class="font-medium">{{ $user->tmt_jabatan?->format('d/m/Y') ?? '-' }}</div>
                     </div>
                     <div class="sm:col-span-2">
                         <div class="text-gray-500">Alamat</div>
