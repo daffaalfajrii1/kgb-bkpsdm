@@ -8,6 +8,16 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .content-wrapper .content .table thead th,
+        .content-wrapper .content .table tbody td {
+            vertical-align: middle;
+        }
+        .content-wrapper .content .table.table-text-center thead th,
+        .content-wrapper .content .table.table-text-center tbody td {
+            text-align: center;
+        }
+    </style>
     @stack('styles')
 </head>
 <body class="hold-transition sidebar-mini">
@@ -79,6 +89,13 @@
                         <a href="{{ route('admin.disiplin.index') }}" class="nav-link {{ request()->routeIs('admin.disiplin.*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-user-lock"></i>
                             <p>Manajemen Disiplin</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('admin.pegawai-skp.index') }}" class="nav-link {{ request()->routeIs('admin.pegawai-skp.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-chart-line"></i>
+                            <p>SKP 2 Tahun Terakhir</p>
                         </a>
                     </li>
 

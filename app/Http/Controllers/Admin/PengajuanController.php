@@ -36,7 +36,7 @@ class PengajuanController extends Controller
             });
         }
 
-        if ($request->filled('status') && in_array($request->status, ['diajukan', 'diproses', 'selesai'])) {
+        if ($request->filled('status') && in_array($request->status, ['diajukan', 'diproses', 'ditolak', 'selesai'])) {
             $query->where('status', $request->status);
         }
 
@@ -45,6 +45,7 @@ class PengajuanController extends Controller
         $countSemua = Pengajuan::count();
         $countDiajukan = Pengajuan::where('status', 'diajukan')->count();
         $countDiproses = Pengajuan::where('status', 'diproses')->count();
+        $countDitolak = Pengajuan::where('status', 'ditolak')->count();
         $countSelesai = Pengajuan::where('status', 'selesai')->count();
 
         return view('admin.pengajuan.index', compact(
@@ -52,6 +53,7 @@ class PengajuanController extends Controller
             'countSemua',
             'countDiajukan',
             'countDiproses',
+            'countDitolak',
             'countSelesai'
         ));
     }
@@ -119,5 +121,19 @@ class PengajuanController extends Controller
         ]);
 
         return back()->with('success', 'Pengajuan berhasil ditandai sebagai selesai.');
+    }
+
+    public function tolak(Request $request, Pengajuan $pengajuan)
+    {
+        $validated = $request->validate([
+            'catatan_admin' => ['required', 'string', 'min:10', 'max:1000'],
+        ]);
+
+        $pengajuan->update([
+            'status' => 'ditolak',
+            'catatan_admin' => trim($validated['catatan_admin']),
+        ]);
+
+        return back()->with('success', 'Pengajuan ditolak dan dikembalikan ke pegawai untuk perbaikan berkas.');
     }
 }

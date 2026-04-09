@@ -83,6 +83,7 @@
                     <option value="">Semua Status</option>
                     <option value="diajukan" {{ request('status') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
                     <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
+                    <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
                     <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
                 </select>
 
@@ -96,7 +97,7 @@
     </div>
 
     <div class="card-body table-responsive p-0">
-        <table class="table table-bordered table-hover mb-0">
+        <table class="table table-bordered table-hover mb-0 table-text-center">
             <thead>
                 <tr>
                     <th width="60">No</th>
@@ -127,6 +128,8 @@
                                 <span class="badge badge-secondary">Diajukan</span>
                             @elseif ($item->status === 'diproses')
                                 <span class="badge badge-warning">Diproses</span>
+                            @elseif ($item->status === 'ditolak')
+                                <span class="badge badge-danger">Ditolak</span>
                             @elseif ($item->status === 'selesai')
                                 <span class="badge badge-success">Selesai</span>
                             @else

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\HasilKgbController;
 use App\Http\Controllers\Admin\AdminPegawaiController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminDisiplinPegawaiController;
+use App\Http\Controllers\Admin\AdminPegawaiSkpController;
 use App\Http\Controllers\Admin\PengajuanController;
 use App\Http\Controllers\Pegawai\PegawaiAuthController;
 use App\Http\Controllers\Pegawai\PegawaiDashboardController;
@@ -28,6 +29,8 @@ Route::prefix('pegawai')->name('pegawai.')->group(function () {
         Route::get('/pengajuan', [PegawaiPengajuanController::class, 'index'])->name('pengajuan.index');
         Route::get('/pengajuan/create', [PegawaiPengajuanController::class, 'create'])->name('pengajuan.create');
         Route::post('/pengajuan', [PegawaiPengajuanController::class, 'store'])->name('pengajuan.store');
+        Route::get('/pengajuan/{pengajuan}/edit', [PegawaiPengajuanController::class, 'edit'])->name('pengajuan.edit');
+        Route::patch('/pengajuan/{pengajuan}', [PegawaiPengajuanController::class, 'update'])->name('pengajuan.update');
 
         Route::get('/sk', [PegawaiSkController::class, 'index'])->name('sk.index');
 
@@ -53,11 +56,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::resource('disiplin', AdminDisiplinPegawaiController::class)->except(['show']);
 
+    // SKP: hanya admin (middleware admin + policy di controller). Pegawai tidak punya rute ke sini.
+    Route::resource('pegawai-skp', AdminPegawaiSkpController::class)
+        ->parameters(['pegawai-skp' => 'pegawaiSkpDuaTahun'])
+        ->except(['show']);
+
     Route::get('/pengajuan', [PengajuanController::class, 'index'])->name('pengajuan.index');
     Route::get('/pengajuan/diproses', [PengajuanController::class, 'diproses'])->name('pengajuan.diproses');
     Route::get('/pengajuan/selesai', [PengajuanController::class, 'selesaiIndex'])->name('pengajuan.selesai.index');
     Route::get('/pengajuan/{pengajuan}', [PengajuanController::class, 'show'])->name('pengajuan.show');
     Route::patch('/pengajuan/{pengajuan}/proses', [PengajuanController::class, 'proses'])->name('pengajuan.proses');
+    Route::patch('/pengajuan/{pengajuan}/tolak', [PengajuanController::class, 'tolak'])->name('pengajuan.tolak');
     Route::patch('/pengajuan/{pengajuan}/selesai', [PengajuanController::class, 'selesai'])->name('pengajuan.selesai');
 
     Route::get('/hasil-kgb', [HasilKgbController::class, 'index'])->name('hasil-kgb.index');

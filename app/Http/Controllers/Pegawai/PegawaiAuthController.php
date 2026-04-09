@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
-use App\Models\DisiplinPegawai;
 use App\Models\User;
+use App\Services\PegawaiAksesDisiplinService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,36 +26,26 @@ class PegawaiAuthController extends Controller
 
         $remember = $request->boolean('remember');
 
-        $nip = preg_replace('/\s+/', '', (string) $credentials['nip']);
-        $nip = ltrim($nip, "'’`");
-        $nip = preg_replace('/[^0-9]/', '', $nip) ?? '';
+        $nip = PegawaiAksesDisiplinService::normalizeNip((string) $credentials['nip']);
 
         if ($nip !== '') {
             $user = User::query()->where('nip', $nip)->first();
 
             if ($user) {
-                $activeDisiplin = DisiplinPegawai::query()
-                    ->where('user_id', $user->id)
-                    ->where('selesai', false)
-                    ->whereIn('tingkat_hukuman', ['sedang', 'berat'])
-                    ->whereDate('tmt_berlaku', '<=', now()->toDateString())
-                        ->where(function ($q) {
-                            $q->whereNull('tmt_selesai')
-                                ->orWhere('tmt_selesai', '>=', now()->toDateString());
-                        })
-                    ->latest('id')
-                    ->first();
+                $block = PegawaiAksesDisiplinService::pesanBlokirLogin($user);
+                if ($block) {
+                    PegawaiAksesDisiplinService::logBlokir('login', $user, $block, ['via' => 'pegawai_login']);
 
-                if ($activeDisiplin) {
-                    $tingkat = $activeDisiplin->tingkat_hukuman;
-                    $tmt = $activeDisiplin->tmt_berlaku?->format('d/m/Y');
-                    $hukuman = (string) $activeDisiplin->hukuman_disiplin;
-
-                    return back()
-                        ->withErrors([
-                            'nip' => "Login ditolak: pegawai sedang dalam hukuman disiplin {$tingkat}. (TMT berlaku: {$tmt}). Hukuman: ".mb_substr($hukuman, 0, 120),
-                        ])
+                    $redirect = back()
+                        ->withErrors(['nip' => $block])
                         ->withInput($request->only('nip'));
+
+                    if (PegawaiAksesDisiplinService::blokirLoginKarenaSkp($user)) {
+                        $redirect->with('login_blokir_skp', true)
+                            ->with('pesan_blokir_login_skp', $block);
+                    }
+
+                    return $redirect;
                 }
             }
         }

@@ -76,7 +76,7 @@
         <h3 class="card-title mb-0">Daftar Pegawai ({{ $pegawais->total() }})</h3>
     </div>
     <div class="card-body table-responsive p-0">
-        <table class="table table-bordered table-hover table-sm mb-0">
+        <table class="table table-bordered table-hover table-sm mb-0 table-text-center">
             <thead>
                 <tr>
                     <th width="50">No</th>

@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use App\Models\DisiplinPegawai;
 use App\Models\User;
+use App\Services\PegawaiAksesDisiplinService;
 
 class LoginRequest extends FormRequest
 {
@@ -47,34 +47,25 @@ class LoginRequest extends FormRequest
         $login = $this->string('login')->toString();
         $remember = $this->boolean('remember');
 
-        // Jika login dengan NIP, cek terlebih dulu apakah pegawai sedang dihukum disiplin
+        // Jika login dengan NIP, cek SKP / hukuman sebelum attempt
         if (! filter_var($login, FILTER_VALIDATE_EMAIL)) {
-            $nip = preg_replace('/\s+/', '', $login);
-            $nip = ltrim($nip, "'’`");
-            $nip = preg_replace('/[^0-9]/', '', $nip) ?? '';
+            $nip = PegawaiAksesDisiplinService::normalizeNip($login);
 
             if ($nip !== '') {
                 $user = User::query()->where('nip', $nip)->first();
 
                 if ($user) {
-                    $activeDisiplin = DisiplinPegawai::query()
-                        ->where('user_id', $user->id)
-                        ->where('selesai', false)
-                        ->whereIn('tingkat_hukuman', ['sedang', 'berat'])
-                        ->whereDate('tmt_berlaku', '<=', now()->toDateString())
-                        ->where(function ($q) {
-                            $q->whereNull('tmt_selesai')
-                                ->orWhere('tmt_selesai', '>=', now()->toDateString());
-                        })
-                        ->latest('id')
-                        ->first();
+                    $block = PegawaiAksesDisiplinService::pesanBlokirLogin($user);
+                    if ($block) {
+                        PegawaiAksesDisiplinService::logBlokir('login', $user, $block, ['via' => 'admin_login_form']);
 
-                    if ($activeDisiplin) {
-                        $tingkat = $activeDisiplin->tingkat_hukuman;
-                        $tmt = $activeDisiplin->tmt_berlaku?->format('d/m/Y');
+                        if (PegawaiAksesDisiplinService::blokirLoginKarenaSkp($user)) {
+                            session()->flash('login_blokir_skp', true);
+                            session()->flash('pesan_blokir_login_skp', $block);
+                        }
 
                         throw ValidationException::withMessages([
-                            'login' => "Login ditolak: pegawai sedang dalam hukuman disiplin {$tingkat}. (TMT berlaku: {$tmt})",
+                            'login' => $block,
                         ]);
                     }
                 }
@@ -91,9 +82,11 @@ class LoginRequest extends FormRequest
                 return;
             }
         } else {
-            // Coba sebagai pegawai (NIP) di guard pegawai
+            $nipForAttempt = PegawaiAksesDisiplinService::normalizeNip($login);
+            $nipCredential = $nipForAttempt !== '' ? $nipForAttempt : $login;
+
             if (Auth::guard('pegawai')->attempt([
-                'nip' => $login,
+                'nip' => $nipCredential,
                 'password' => $this->string('password')->toString(),
             ], $remember)) {
                 RateLimiter::clear($this->throttleKey());

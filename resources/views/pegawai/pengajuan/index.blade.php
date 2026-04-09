@@ -22,15 +22,27 @@
                 </p>
             </div>
             <div class="flex gap-3 justify-end">
-                <a href="{{ route('pegawai.pengajuan.create') }}" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">
-                    Ajukan KGB Baru
-                </a>
+                @if ($bolehAjukan)
+                    <a href="{{ route('pegawai.pengajuan.create') }}" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                        Ajukan KGB Baru
+                    </a>
+                @else
+                    <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold bg-gray-200 text-gray-600 cursor-not-allowed" title="Tidak dapat mengajukan karena SKP atau hukuman disiplin">
+                        Ajukan KGB Baru (nonaktif)
+                    </span>
+                @endif
             </div>
         </div>
 
         @if (session('success'))
             <div class="mb-4 rounded-lg bg-green-100 border border-green-200 px-4 py-3 text-sm text-green-800">
                 {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->has('pengajuan'))
+            <div class="mb-4 rounded-lg bg-red-100 border border-red-200 px-4 py-3 text-sm text-red-800">
+                {{ $errors->first('pengajuan') }}
             </div>
         @endif
 
@@ -43,6 +55,7 @@
                         <th class="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
                         <th class="px-4 py-3 text-left font-semibold text-gray-700">Pesan Admin</th>
                         <th class="px-4 py-3 text-left font-semibold text-gray-700">SK</th>
+                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -84,10 +97,19 @@
                                     <span class="text-gray-400 text-xs">Belum tersedia</span>
                                 @endif
                             </td>
+                            <td class="px-4 py-3">
+                                @if ($item->status === 'ditolak' && $bolehAjukan)
+                                    <a href="{{ route('pegawai.pengajuan.edit', $item->id) }}" class="inline-flex items-center px-3 py-1 rounded-md bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700">
+                                        Perbaiki & Kirim Ulang
+                                    </a>
+                                @else
+                                    <span class="text-gray-400 text-xs">-</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                            <td colspan="6" class="px-4 py-6 text-center text-gray-500">
                                 Belum ada pengajuan KGB yang tercatat.
                             </td>
                         </tr>

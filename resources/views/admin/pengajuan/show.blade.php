@@ -44,12 +44,18 @@
                         <span class="badge badge-secondary">Diajukan</span>
                     @elseif ($pengajuan->status === 'diproses')
                         <span class="badge badge-warning">Diproses</span>
+                    @elseif ($pengajuan->status === 'ditolak')
+                        <span class="badge badge-danger">Ditolak / Dikembalikan</span>
                     @elseif ($pengajuan->status === 'selesai')
                         <span class="badge badge-success">Selesai</span>
                     @else
                         <span class="badge badge-dark">{{ $pengajuan->status }}</span>
                     @endif
                 </td>
+            </tr>
+            <tr>
+                <th>Catatan Admin</th>
+                <td>{{ $pengajuan->catatan_admin ?: '-' }}</td>
             </tr>
         </table>
     </div>
@@ -142,6 +148,12 @@
             </form>
         @endif
 
+        @if (in_array($pengajuan->status, ['diajukan', 'diproses']))
+            <button type="button" class="btn btn-danger ml-2" data-toggle="collapse" data-target="#formTolakPengajuan" aria-expanded="false">
+                Tolak & Kembalikan
+            </button>
+        @endif
+
         @if ($pengajuan->status === 'diproses')
             <a href="{{ route('admin.hasil-kgb.create') }}" class="btn btn-success">
                 Upload Hasil KGB
@@ -158,5 +170,24 @@
             Kembali
         </a>
     </div>
+
+    @if (in_array($pengajuan->status, ['diajukan', 'diproses']))
+        <div class="card-footer border-top">
+            <div class="collapse" id="formTolakPengajuan">
+                <form action="{{ route('admin.pengajuan.tolak', $pengajuan->id) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <div class="form-group mb-2">
+                        <label class="mb-1">Catatan perbaikan untuk pegawai <span class="text-danger">*</span></label>
+                        <textarea name="catatan_admin" rows="3" class="form-control" required minlength="10" maxlength="1000" placeholder="Contoh: SK pangkat tidak terbaca, mohon upload ulang file legalisir yang jelas.">{{ old('catatan_admin', $pengajuan->catatan_admin) }}</textarea>
+                        <small class="text-muted">Setelah ditolak, pengajuan akan kembali ke pegawai untuk upload ulang berkas perbaikan.</small>
+                    </div>
+                    <button class="btn btn-danger" onclick="return confirm('Yakin menolak dan mengembalikan pengajuan ini ke pegawai?')">
+                        Simpan Penolakan
+                    </button>
+                </form>
+            </div>
+        </div>
+    @endif
 </div>
 @endsection

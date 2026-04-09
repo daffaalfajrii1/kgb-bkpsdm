@@ -4,13 +4,24 @@ namespace App\Http\Controllers\Pegawai;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pengajuan;
+use App\Services\PegawaiAksesDisiplinService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PegawaiPengajuanController extends Controller
 {
+    private array $uploadFields = [
+        'surat_pengantar_skpd',
+        'sk_cpns_legalisir',
+        'sk_pangkat_terakhir_legalisir',
+        'kgb_terakhir',
+        'sk_peninjauan_masa_kerja',
+        'skp_1_tahun_terakhir',
+    ];
+
     public function index(): View
     {
         $user = Auth::guard('pegawai')->user();
@@ -20,12 +31,22 @@ class PegawaiPengajuanController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('pegawai.pengajuan.index', compact('pengajuans', 'user'));
+        $bolehAjukan = PegawaiAksesDisiplinService::pesanBlokirPengajuan($user) === null;
+
+        return view('pegawai.pengajuan.index', compact('pengajuans', 'user', 'bolehAjukan'));
     }
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         $user = Auth::guard('pegawai')->user();
+
+        if ($msg = PegawaiAksesDisiplinService::pesanBlokirPengajuan($user)) {
+            PegawaiAksesDisiplinService::logBlokir('pengajuan', $user, $msg, ['action' => 'create']);
+
+            return redirect()
+                ->route('pegawai.pengajuan.index')
+                ->withErrors(['pengajuan' => $msg]);
+        }
 
         $pangkatOptions = [
             'I/a','I/b','I/c','I/d',
@@ -40,6 +61,14 @@ class PegawaiPengajuanController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $user = Auth::guard('pegawai')->user();
+
+        if ($msg = PegawaiAksesDisiplinService::pesanBlokirPengajuan($user)) {
+            PegawaiAksesDisiplinService::logBlokir('pengajuan', $user, $msg, ['action' => 'store']);
+
+            return redirect()
+                ->route('pegawai.pengajuan.index')
+                ->withErrors(['pengajuan' => $msg]);
+        }
 
         $validated = $request->validate([
             'tmt_berkala_berikutnya' => 'required|date',
@@ -74,6 +103,95 @@ class PegawaiPengajuanController extends Controller
         return redirect()
             ->route('pegawai.pengajuan.index')
             ->with('success', 'Pengajuan berhasil dikirim. Silakan pantau status pengajuan Anda di halaman ini.');
+    }
+
+    public function edit(Pengajuan $pengajuan): View|RedirectResponse
+    {
+        $user = Auth::guard('pegawai')->user();
+
+        if ($pengajuan->nip !== $user->nip) {
+            abort(403);
+        }
+
+        if ($pengajuan->status !== 'ditolak') {
+            return redirect()
+                ->route('pegawai.pengajuan.index')
+                ->withErrors(['pengajuan' => 'Hanya pengajuan berstatus ditolak yang dapat diperbaiki.']);
+        }
+
+        if ($msg = PegawaiAksesDisiplinService::pesanBlokirPengajuan($user)) {
+            return redirect()
+                ->route('pegawai.pengajuan.index')
+                ->withErrors(['pengajuan' => $msg]);
+        }
+
+        return view('pegawai.pengajuan.edit', compact('user', 'pengajuan'));
+    }
+
+    public function update(Request $request, Pengajuan $pengajuan): RedirectResponse
+    {
+        $user = Auth::guard('pegawai')->user();
+
+        if ($pengajuan->nip !== $user->nip) {
+            abort(403);
+        }
+
+        if ($pengajuan->status !== 'ditolak') {
+            return redirect()
+                ->route('pegawai.pengajuan.index')
+                ->withErrors(['pengajuan' => 'Hanya pengajuan berstatus ditolak yang dapat diperbaiki.']);
+        }
+
+        if ($msg = PegawaiAksesDisiplinService::pesanBlokirPengajuan($user)) {
+            return redirect()
+                ->route('pegawai.pengajuan.index')
+                ->withErrors(['pengajuan' => $msg]);
+        }
+
+        $validated = $request->validate([
+            'tmt_berkala_berikutnya' => 'required|date',
+            'surat_pengantar_skpd' => 'nullable|mimes:pdf|max:2048',
+            'sk_cpns_legalisir' => 'nullable|mimes:pdf|max:2048',
+            'sk_pangkat_terakhir_legalisir' => 'nullable|mimes:pdf|max:2048',
+            'kgb_terakhir' => 'nullable|mimes:pdf|max:2048',
+            'sk_peninjauan_masa_kerja' => 'nullable|mimes:pdf|max:2048',
+            'skp_1_tahun_terakhir' => 'nullable|mimes:pdf|max:2048',
+        ]);
+
+        $adaPerubahanBerkas = false;
+        foreach ($this->uploadFields as $field) {
+            if ($request->hasFile($field)) {
+                $adaPerubahanBerkas = true;
+                break;
+            }
+        }
+
+        if (! $adaPerubahanBerkas) {
+            return back()->withErrors([
+                'pengajuan' => 'Unggah minimal 1 berkas yang diperbaiki sebelum kirim ulang.',
+            ]);
+        }
+
+        $dataUpdate = [
+            'tmt_berkala_berikutnya' => $validated['tmt_berkala_berikutnya'],
+            'status' => 'diajukan',
+            'catatan_admin' => null,
+        ];
+
+        foreach ($this->uploadFields as $field) {
+            if ($request->hasFile($field)) {
+                if (! empty($pengajuan->{$field})) {
+                    Storage::disk('public')->delete($pengajuan->{$field});
+                }
+                $dataUpdate[$field] = $request->file($field)->store('pengajuan', 'public');
+            }
+        }
+
+        $pengajuan->update($dataUpdate);
+
+        return redirect()
+            ->route('pegawai.pengajuan.index')
+            ->with('success', 'Perbaikan pengajuan berhasil dikirim ulang. Status kembali menjadi diajukan.');
     }
 }
 

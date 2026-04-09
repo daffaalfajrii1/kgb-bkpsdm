@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\PegawaiAksesDisiplinService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +25,30 @@ class PegawaiMiddleware
 
         if ($user?->role !== 'pegawai') {
             abort(403);
+        }
+
+        $block = PegawaiAksesDisiplinService::pesanBlokirLogin($user);
+        if ($block) {
+            PegawaiAksesDisiplinService::logBlokir('middleware', $user, $block, [
+                'path' => $request->path(),
+            ]);
+
+            $skpBlokir = PegawaiAksesDisiplinService::blokirLoginKarenaSkp($user);
+
+            Auth::guard('pegawai')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            $redirect = redirect()
+                ->route('pegawai.login')
+                ->withErrors(['nip' => $block]);
+
+            if ($skpBlokir) {
+                $redirect->with('login_blokir_skp', true)
+                    ->with('pesan_blokir_login_skp', $block);
+            }
+
+            return $redirect;
         }
 
         return $next($request);

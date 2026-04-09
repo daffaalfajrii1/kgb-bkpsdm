@@ -16,7 +16,14 @@
     </div>
 @endif
 
-@if ($errors->any())
+@if (session('login_blokir_skp'))
+    <div role="alert" class="mb-4 rounded-xl border-l-4 border-amber-500 bg-amber-50 text-amber-950 px-4 py-4 text-sm shadow-sm">
+        <p class="font-bold text-amber-900 mb-2">Tidak dapat masuk ke sistem</p>
+        <p class="leading-relaxed text-amber-900/95">
+            {{ session('pesan_blokir_login_skp', $errors->first('nip')) ?: 'Anda tidak dapat masuk karena hasil penilaian kinerja (SKP) pada 2 (dua) tahun terakhir berada pada kategori Buruk atau Sangat Buruk, sesuai data penilaian kinerja yang tercatat.' }}
+        </p>
+    </div>
+@elseif ($errors->any())
     <div class="mb-4 rounded-xl bg-red-100 border border-red-200 px-4 py-3 text-sm text-red-700">
         <ul class="list-disc pl-5">
             @foreach ($errors->all() as $error)

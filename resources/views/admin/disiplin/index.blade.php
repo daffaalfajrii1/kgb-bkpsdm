@@ -41,7 +41,7 @@
         <h3 class="card-title mb-0">Daftar Hukuman Disiplin</h3>
     </div>
     <div class="card-body table-responsive p-0">
-        <table class="table table-bordered table-hover table-sm mb-0">
+        <table class="table table-bordered table-hover table-sm mb-0 table-text-center">
             <thead>
                 <tr>
                     <th>Nama</th>
@@ -77,7 +77,7 @@
                             @endif
                         </td>
                         <td><span class="{{ $badge }}">{{ ucfirst($tingkat) }}</span></td>
-                        <td>{{ \Illuminate\Support\Str::limit($item->hukuman_disiplin, 120) }}</td>
+                        <td class="text-left">{{ \Illuminate\Support\Str::limit($item->hukuman_disiplin, 120) }}</td>
                         <td>
                             <a href="{{ route('admin.disiplin.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                             <form method="POST" action="{{ route('admin.disiplin.destroy', $item->id) }}" class="d-inline" onsubmit="return confirm('Hapus data disiplin ini?');">
