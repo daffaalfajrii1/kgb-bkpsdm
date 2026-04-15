@@ -125,7 +125,12 @@ class PegawaiPengajuanController extends Controller
                 ->withErrors(['pengajuan' => $msg]);
         }
 
-        return view('pegawai.pengajuan.edit', compact('user', 'pengajuan'));
+        $requiredFixes = $pengajuan->perbaikan_items;
+        if (! is_array($requiredFixes)) {
+            $requiredFixes = [];
+        }
+
+        return view('pegawai.pengajuan.edit', compact('user', 'pengajuan', 'requiredFixes'));
     }
 
     public function update(Request $request, Pengajuan $pengajuan): RedirectResponse
@@ -148,15 +153,21 @@ class PegawaiPengajuanController extends Controller
                 ->withErrors(['pengajuan' => $msg]);
         }
 
-        $validated = $request->validate([
-            'tmt_berkala_berikutnya' => 'required|date',
-            'surat_pengantar_skpd' => 'nullable|mimes:pdf|max:2048',
-            'sk_cpns_legalisir' => 'nullable|mimes:pdf|max:2048',
-            'sk_pangkat_terakhir_legalisir' => 'nullable|mimes:pdf|max:2048',
-            'kgb_terakhir' => 'nullable|mimes:pdf|max:2048',
-            'sk_peninjauan_masa_kerja' => 'nullable|mimes:pdf|max:2048',
-            'skp_1_tahun_terakhir' => 'nullable|mimes:pdf|max:2048',
-        ]);
+        $requiredFixes = $pengajuan->perbaikan_items;
+        if (! is_array($requiredFixes)) {
+            $requiredFixes = [];
+        }
+
+        $rules = [
+            'tmt_berkala_berikutnya' => in_array('tmt_berkala_berikutnya', $requiredFixes, true) ? 'required|date' : 'nullable|date',
+            'surat_pengantar_skpd' => in_array('surat_pengantar_skpd', $requiredFixes, true) ? 'required|mimes:pdf|max:2048' : 'nullable|mimes:pdf|max:2048',
+            'sk_cpns_legalisir' => in_array('sk_cpns_legalisir', $requiredFixes, true) ? 'required|mimes:pdf|max:2048' : 'nullable|mimes:pdf|max:2048',
+            'sk_pangkat_terakhir_legalisir' => in_array('sk_pangkat_terakhir_legalisir', $requiredFixes, true) ? 'required|mimes:pdf|max:2048' : 'nullable|mimes:pdf|max:2048',
+            'kgb_terakhir' => in_array('kgb_terakhir', $requiredFixes, true) ? 'required|mimes:pdf|max:2048' : 'nullable|mimes:pdf|max:2048',
+            'sk_peninjauan_masa_kerja' => in_array('sk_peninjauan_masa_kerja', $requiredFixes, true) ? 'required|mimes:pdf|max:2048' : 'nullable|mimes:pdf|max:2048',
+            'skp_1_tahun_terakhir' => in_array('skp_1_tahun_terakhir', $requiredFixes, true) ? 'required|mimes:pdf|max:2048' : 'nullable|mimes:pdf|max:2048',
+        ];
+        $validated = $request->validate($rules);
 
         $adaPerubahanBerkas = false;
         foreach ($this->uploadFields as $field) {
@@ -166,16 +177,17 @@ class PegawaiPengajuanController extends Controller
             }
         }
 
-        if (! $adaPerubahanBerkas) {
+        if (! $adaPerubahanBerkas && $requiredFixes === []) {
             return back()->withErrors([
                 'pengajuan' => 'Unggah minimal 1 berkas yang diperbaiki sebelum kirim ulang.',
             ]);
         }
 
         $dataUpdate = [
-            'tmt_berkala_berikutnya' => $validated['tmt_berkala_berikutnya'],
+            'tmt_berkala_berikutnya' => $validated['tmt_berkala_berikutnya'] ?? $pengajuan->tmt_berkala_berikutnya,
             'status' => 'diajukan',
             'catatan_admin' => null,
+            'perbaikan_items' => null,
         ];
 
         foreach ($this->uploadFields as $field) {

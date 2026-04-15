@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use App\Models\User;
-use App\Services\PegawaiAksesDisiplinService;
 
 class LoginRequest extends FormRequest
 {
@@ -47,51 +45,22 @@ class LoginRequest extends FormRequest
         $login = $this->string('login')->toString();
         $remember = $this->boolean('remember');
 
-        // Jika login dengan NIP, cek SKP / hukuman sebelum attempt
+        // Admin login hanya via email (guard web), supaya /admin/login tidak bisa login pegawai.
         if (! filter_var($login, FILTER_VALIDATE_EMAIL)) {
-            $nip = PegawaiAksesDisiplinService::normalizeNip($login);
+            RateLimiter::hit($this->throttleKey());
 
-            if ($nip !== '') {
-                $user = User::query()->where('nip', $nip)->first();
-
-                if ($user) {
-                    $block = PegawaiAksesDisiplinService::pesanBlokirLogin($user);
-                    if ($block) {
-                        PegawaiAksesDisiplinService::logBlokir('login', $user, $block, ['via' => 'admin_login_form']);
-
-                        if (PegawaiAksesDisiplinService::blokirLoginKarenaSkp($user)) {
-                            session()->flash('login_blokir_skp', true);
-                            session()->flash('pesan_blokir_login_skp', $block);
-                        }
-
-                        throw ValidationException::withMessages([
-                            'login' => $block,
-                        ]);
-                    }
-                }
-            }
+            throw ValidationException::withMessages([
+                'login' => 'Gunakan email admin untuk login admin.',
+            ]);
         }
 
-        // Coba sebagai admin (email) di guard web
-        if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
-            if (Auth::guard('web')->attempt([
-                'email' => $login,
-                'password' => $this->string('password')->toString(),
-            ], $remember)) {
-                RateLimiter::clear($this->throttleKey());
-                return;
-            }
-        } else {
-            $nipForAttempt = PegawaiAksesDisiplinService::normalizeNip($login);
-            $nipCredential = $nipForAttempt !== '' ? $nipForAttempt : $login;
+        if (Auth::guard('web')->attempt([
+            'email' => $login,
+            'password' => $this->string('password')->toString(),
+        ], $remember)) {
+            RateLimiter::clear($this->throttleKey());
 
-            if (Auth::guard('pegawai')->attempt([
-                'nip' => $nipCredential,
-                'password' => $this->string('password')->toString(),
-            ], $remember)) {
-                RateLimiter::clear($this->throttleKey());
-                return;
-            }
+            return;
         }
 
         RateLimiter::hit($this->throttleKey());

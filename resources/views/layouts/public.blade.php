@@ -38,7 +38,6 @@
 
             @php
                 $pegawaiLoggedIn = Auth::guard('pegawai')->check();
-                $adminLoggedIn = Auth::guard('web')->check();
             @endphp
 
             {{-- Pengajuan KGB: jika sudah login pegawai langsung ke form, jika belum ke halaman login pegawai --}}
@@ -48,13 +47,11 @@
                 <a href="{{ route('pegawai.login') }}">Pengajuan KGB</a>
             @endif
 
-            {{-- Tombol login / dashboard sesuai role --}}
+            {{-- Tombol login / dashboard hanya untuk pegawai di area publik --}}
             @if ($pegawaiLoggedIn)
                 <a href="{{ route('pegawai.dashboard') }}">Dashboard Pegawai</a>
-            @elseif ($adminLoggedIn)
-                <a href="{{ route('admin.dashboard') }}">Dashboard Admin</a>
             @else
-                <a href="{{ route('login') }}">Login</a>
+                <a href="{{ route('pegawai.login') }}">Login Pegawai</a>
             @endif
         </nav>
     </div>
@@ -98,7 +95,7 @@
                     <li><a href="{{ route('pegawai.dashboard') }}">Dashboard Pegawai</a></li>
                 @else
                     <li><a href="{{ route('pegawai.login') }}">Pengajuan KGB</a></li>
-                    <li><a href="{{ route('login') }}">Login</a></li>
+                    <li><a href="{{ route('pegawai.login') }}">Login Pegawai</a></li>
                 @endif
             </ul>
         </div>

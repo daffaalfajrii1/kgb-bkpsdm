@@ -6,7 +6,7 @@
 <div class="mb-8">
     <h2 class="text-3xl font-bold text-gray-800">Login</h2>
     <p class="text-sm text-gray-500 mt-2">
-        Masukkan <span class="font-semibold">Email (untuk admin)</span> atau <span class="font-semibold">NIP (untuk pegawai)</span> beserta password.
+        Masukkan <span class="font-semibold">Email admin</span> beserta password.
     </p>
 </div>
 
@@ -37,7 +37,7 @@
     @csrf
 
     <div>
-        <label for="login" class="block text-sm font-semibold text-gray-700 mb-2">Email / NIP</label>
+        <label for="login" class="block text-sm font-semibold text-gray-700 mb-2">Email Admin</label>
         <input
             id="login"
             type="text"
@@ -47,7 +47,7 @@
             autofocus
             autocomplete="username"
             class="auth-input w-full border border-gray-300 rounded-xl px-4 py-3"
-            placeholder="Masukkan email admin atau NIP pegawai"
+            placeholder="Masukkan email admin"
         >
     </div>
 
@@ -69,7 +69,7 @@
             <input
                 type="checkbox"
                 name="remember"
-                class="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                class="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
             >
             <span class="ml-2 text-sm text-gray-600">Ingat saya</span>
         </label>

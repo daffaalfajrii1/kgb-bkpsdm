@@ -27,6 +27,28 @@
                     <div>{{ $pengajuan->catatan_admin ?: 'Tidak ada catatan.' }}</div>
                 </div>
 
+                @if (!empty($requiredFixes))
+                    <div class="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+                        <div class="font-semibold mb-1">Item wajib diperbaiki:</div>
+                        <ul class="list-disc pl-5">
+                            @foreach ($requiredFixes as $fix)
+                                <li>
+                                    @switch($fix)
+                                        @case('tmt_berkala_berikutnya') TMT berkala berikutnya @break
+                                        @case('surat_pengantar_skpd') Surat Pengantar SKPD @break
+                                        @case('sk_cpns_legalisir') SK CPNS legalisir @break
+                                        @case('sk_pangkat_terakhir_legalisir') SK Pangkat terakhir legalisir @break
+                                        @case('kgb_terakhir') KGB terakhir @break
+                                        @case('sk_peninjauan_masa_kerja') SK Peninjauan Masa Kerja @break
+                                        @case('skp_1_tahun_terakhir') SKP 1 tahun terakhir @break
+                                        @default {{ $fix }}
+                                    @endswitch
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div>
                     <h2 class="text-xl font-semibold mb-4">Data Pegawai</h2>
                     <div class="grid md:grid-cols-2 gap-6 text-sm">
@@ -54,7 +76,7 @@
                                 name="tmt_berkala_berikutnya"
                                 value="{{ old('tmt_berkala_berikutnya', \Illuminate\Support\Carbon::parse($pengajuan->tmt_berkala_berikutnya)->format('Y-m-d')) }}"
                                 class="w-full border rounded-lg px-4 py-3"
-                                required
+                                {{ in_array('tmt_berkala_berikutnya', $requiredFixes ?? [], true) ? 'required' : '' }}
                             >
                         </div>
                     </div>
@@ -69,27 +91,27 @@
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label class="block font-medium mb-2">PDF Surat Pengantar dari SKPD</label>
-                            <input type="file" name="surat_pengantar_skpd" accept="application/pdf" class="w-full border rounded-lg px-4 py-3">
+                            <input type="file" name="surat_pengantar_skpd" accept="application/pdf" class="w-full border rounded-lg px-4 py-3" {{ in_array('surat_pengantar_skpd', $requiredFixes ?? [], true) ? 'required' : '' }}>
                         </div>
                         <div>
                             <label class="block font-medium mb-2">PDF Legalisir SK CPNS</label>
-                            <input type="file" name="sk_cpns_legalisir" accept="application/pdf" class="w-full border rounded-lg px-4 py-3">
+                            <input type="file" name="sk_cpns_legalisir" accept="application/pdf" class="w-full border rounded-lg px-4 py-3" {{ in_array('sk_cpns_legalisir', $requiredFixes ?? [], true) ? 'required' : '' }}>
                         </div>
                         <div>
                             <label class="block font-medium mb-2">PDF SK Pangkat Terakhir Legalisir</label>
-                            <input type="file" name="sk_pangkat_terakhir_legalisir" accept="application/pdf" class="w-full border rounded-lg px-4 py-3">
+                            <input type="file" name="sk_pangkat_terakhir_legalisir" accept="application/pdf" class="w-full border rounded-lg px-4 py-3" {{ in_array('sk_pangkat_terakhir_legalisir', $requiredFixes ?? [], true) ? 'required' : '' }}>
                         </div>
                         <div>
                             <label class="block font-medium mb-2">PDF SK Kenaikan Gaji Berkala Terakhir</label>
-                            <input type="file" name="kgb_terakhir" accept="application/pdf" class="w-full border rounded-lg px-4 py-3">
+                            <input type="file" name="kgb_terakhir" accept="application/pdf" class="w-full border rounded-lg px-4 py-3" {{ in_array('kgb_terakhir', $requiredFixes ?? [], true) ? 'required' : '' }}>
                         </div>
                         <div>
                             <label class="block font-medium mb-2">PDF SK Peninjauan Masa Kerja (Opsional)</label>
-                            <input type="file" name="sk_peninjauan_masa_kerja" accept="application/pdf" class="w-full border rounded-lg px-4 py-3">
+                            <input type="file" name="sk_peninjauan_masa_kerja" accept="application/pdf" class="w-full border rounded-lg px-4 py-3" {{ in_array('sk_peninjauan_masa_kerja', $requiredFixes ?? [], true) ? 'required' : '' }}>
                         </div>
                         <div>
                             <label class="block font-medium mb-2">PDF SKP 1 Tahun Terakhir</label>
-                            <input type="file" name="skp_1_tahun_terakhir" accept="application/pdf" class="w-full border rounded-lg px-4 py-3">
+                            <input type="file" name="skp_1_tahun_terakhir" accept="application/pdf" class="w-full border rounded-lg px-4 py-3" {{ in_array('skp_1_tahun_terakhir', $requiredFixes ?? [], true) ? 'required' : '' }}>
                         </div>
                     </div>
                 </div>

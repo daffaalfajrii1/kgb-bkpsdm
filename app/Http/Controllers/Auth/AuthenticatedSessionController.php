@@ -16,6 +16,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
+        // Kalau sedang login pegawai, jangan tampilkan halaman login admin.
+        if (Auth::guard('pegawai')->check()) {
+            return redirect()->route('pegawai.dashboard');
+        }
+
         return view('auth.login');
     }
 
@@ -28,9 +33,21 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Arahkan sesuai role / guard yang berhasil login
-        if (Auth::guard('pegawai')->check()) {
-            return redirect()->intended(route('pegawai.dashboard', absolute: false));
+        // Pastikan tidak bentrok dengan session pegawai.
+        Auth::guard('pegawai')->logout();
+
+        $admin = Auth::guard('web')->user();
+        if (! $admin || ($admin->role ?? null) !== 'admin') {
+            Auth::guard('web')->logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()
+                ->withErrors([
+                    'login' => 'Akun ini tidak memiliki akses admin.',
+                ])
+                ->withInput($request->only('login'));
         }
 
         return redirect()->intended(route('admin.dashboard', absolute: false));

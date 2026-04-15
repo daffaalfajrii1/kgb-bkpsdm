@@ -15,12 +15,17 @@ class Pengajuan extends Model
         'tmt_berkala_berikutnya',
         'status',
         'catatan_admin',
+        'perbaikan_items',
         'surat_pengantar_skpd',
         'sk_cpns_legalisir',
         'sk_pangkat_terakhir_legalisir',
         'kgb_terakhir',
         'sk_peninjauan_masa_kerja',
         'skp_1_tahun_terakhir',
+    ];
+
+    protected $casts = [
+        'perbaikan_items' => 'array',
     ];
 
     protected static function booted(): void

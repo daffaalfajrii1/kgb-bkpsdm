@@ -10,8 +10,8 @@
 
     <style>
         :root {
-            --primary: #e74c3c;
-            --secondary: #f39c12;
+            --primary: #2563eb;
+            --secondary: #60a5fa;
         }
 
         .auth-gradient {
@@ -25,19 +25,19 @@
 
         .auth-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 12px 24px rgba(231, 76, 60, 0.22);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
         }
 
         .auth-input:focus {
             outline: none;
-            border-color: #f39c12;
-            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.15);
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
         }
     </style>
 </head>
 <body class="min-h-screen auth-gradient flex items-center justify-center px-4 py-8">
     <div class="w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
-        <div class="hidden lg:flex auth-gradient text-white p-12 flex-col justify-center">
+                <div class="hidden lg:flex auth-gradient text-white p-12 flex-col justify-center">
             <div class="flex items-center gap-4 mb-8">
                 <img
                     src="{{ asset('assets/img/logo-rejang-lebong.png') }}"
@@ -46,7 +46,7 @@
                 >
                 <div>
                     <h1 class="text-3xl font-bold">KGB Online</h1>
-                    <p class="text-sm text-orange-100">Kabupaten Rejang Lebong</p>
+                        <p class="text-sm text-blue-100">Kabupaten Rejang Lebong</p>
                 </div>
             </div>
 
@@ -54,7 +54,7 @@
                 Halaman Login Admin
             </h2>
 
-            <p class="text-orange-50 leading-7 text-sm max-w-lg">
+                    <p class="text-blue-50 leading-7 text-sm max-w-lg">
                 Gunakan akun admin untuk mengelola pengajuan kenaikan gaji berkala,
                 memproses berkas, memantau status registrasi, dan mengunggah SK KGB
                 yang telah selesai.

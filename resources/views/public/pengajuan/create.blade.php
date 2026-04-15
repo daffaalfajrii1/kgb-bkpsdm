@@ -91,8 +91,8 @@
                         Kirim Pengajuan
                     </button>
 
-                    <a href="{{ route('public.status.index') }}" class="border border-gray-300 px-8 py-3 rounded-lg font-semibold text-gray-700">
-                        Cek Registrasi
+                    <a href="{{ route('public.sk.index') }}" class="border border-gray-300 px-8 py-3 rounded-lg font-semibold text-gray-700">
+                        Lihat SK Terbaru
                     </a>
                 </div>
             </form>

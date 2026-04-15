@@ -1,4 +1,4 @@
-@extends('layouts.auth')
+@extends('layouts.auth-pegawai')
 
 @section('title', 'Login Pegawai KGB')
 
@@ -74,9 +74,11 @@
             <span class="ml-2 text-sm text-gray-600">Ingat saya</span>
         </label>
 
-        <a href="{{ route('home') }}" class="text-sm text-gray-500 hover:text-orange-600">
-            Kembali ke beranda
-        </a>
+        @if (Route::has('pegawai.password.request'))
+            <a href="{{ route('pegawai.password.request') }}" class="text-sm text-gray-500 hover:text-orange-600">
+                Lupa password?
+            </a>
+        @endif
     </div>
 
     <button
@@ -86,5 +88,11 @@
         Masuk
     </button>
 </form>
+
+<div class="text-center mt-4">
+    <a href="{{ route('home') }}" class="text-sm text-gray-500 hover:text-orange-600">
+        Kembali ke beranda
+    </a>
+</div>
 @endsection
 

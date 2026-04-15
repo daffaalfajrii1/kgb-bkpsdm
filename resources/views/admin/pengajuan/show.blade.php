@@ -139,13 +139,9 @@
 
     <div class="card-body">
         @if ($pengajuan->status === 'diajukan')
-            <form action="{{ route('admin.pengajuan.proses', $pengajuan->id) }}" method="POST" style="display:inline-block;">
-                @csrf
-                @method('PATCH')
-                <button class="btn btn-warning" onclick="return confirm('Tandai pengajuan ini sebagai diproses?')">
-                    Tandai Diproses
-                </button>
-            </form>
+            <button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#formVerifikasiPengajuan" aria-expanded="false">
+                Proses (Checklist Verifikasi)
+            </button>
         @endif
 
         @if (in_array($pengajuan->status, ['diajukan', 'diproses']))
@@ -171,6 +167,51 @@
         </a>
     </div>
 
+    @if ($pengajuan->status === 'diajukan')
+        <div class="card-footer border-top">
+            <div class="collapse" id="formVerifikasiPengajuan">
+                <form action="{{ route('admin.pengajuan.proses', $pengajuan->id) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="verifikasi_mode" value="1">
+                    <div class="mb-2 font-weight-bold">Checklist verifikasi kelengkapan (wajib semua):</div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="cek_all_verifikasi">
+                        <label class="form-check-label font-weight-bold" for="cek_all_verifikasi">Pilih semua item</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input verifikasi-item" type="checkbox" id="cek_tmt_berkala_berikutnya" name="cek_tmt_berkala_berikutnya" value="1" required>
+                        <label class="form-check-label" for="cek_tmt_berkala_berikutnya">TMT berkala berikutnya sudah benar</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input verifikasi-item" type="checkbox" id="cek_surat_pengantar_skpd" name="cek_surat_pengantar_skpd" value="1" required>
+                        <label class="form-check-label" for="cek_surat_pengantar_skpd">Surat Pengantar SKPD valid</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input verifikasi-item" type="checkbox" id="cek_sk_cpns_legalisir" name="cek_sk_cpns_legalisir" value="1" required>
+                        <label class="form-check-label" for="cek_sk_cpns_legalisir">SK CPNS legalisir valid</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input verifikasi-item" type="checkbox" id="cek_sk_pangkat_terakhir_legalisir" name="cek_sk_pangkat_terakhir_legalisir" value="1" required>
+                        <label class="form-check-label" for="cek_sk_pangkat_terakhir_legalisir">SK pangkat terakhir legalisir valid</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input verifikasi-item" type="checkbox" id="cek_kgb_terakhir" name="cek_kgb_terakhir" value="1" required>
+                        <label class="form-check-label" for="cek_kgb_terakhir">KGB terakhir valid</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input verifikasi-item" type="checkbox" id="cek_skp_1_tahun_terakhir" name="cek_skp_1_tahun_terakhir" value="1" required>
+                        <label class="form-check-label" for="cek_skp_1_tahun_terakhir">SKP 1 tahun terakhir valid</label>
+                    </div>
+
+                    <button class="btn btn-warning" onclick="return confirm('Semua berkas sudah benar dan pengajuan diproses?')">
+                        Simpan & Tandai Diproses
+                    </button>
+                </form>
+            </div>
+        </div>
+    @endif
+
     @if (in_array($pengajuan->status, ['diajukan', 'diproses']))
         <div class="card-footer border-top">
             <div class="collapse" id="formTolakPengajuan">
@@ -178,9 +219,40 @@
                     @csrf
                     @method('PATCH')
                     <div class="form-group mb-2">
+                        <label class="mb-1">Checklist item yang harus diperbaiki pegawai <span class="text-danger">*</span></label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="perbaikan_items[]" id="perbaikan_tmt" value="tmt_berkala_berikutnya">
+                            <label class="form-check-label" for="perbaikan_tmt">TMT berkala berikutnya</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="perbaikan_items[]" id="perbaikan_surat_pengantar" value="surat_pengantar_skpd">
+                            <label class="form-check-label" for="perbaikan_surat_pengantar">Surat Pengantar SKPD</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="perbaikan_items[]" id="perbaikan_sk_cpns" value="sk_cpns_legalisir">
+                            <label class="form-check-label" for="perbaikan_sk_cpns">SK CPNS legalisir</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="perbaikan_items[]" id="perbaikan_sk_pangkat" value="sk_pangkat_terakhir_legalisir">
+                            <label class="form-check-label" for="perbaikan_sk_pangkat">SK Pangkat terakhir legalisir</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="perbaikan_items[]" id="perbaikan_kgb" value="kgb_terakhir">
+                            <label class="form-check-label" for="perbaikan_kgb">KGB terakhir</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="perbaikan_items[]" id="perbaikan_sk_peninjauan" value="sk_peninjauan_masa_kerja">
+                            <label class="form-check-label" for="perbaikan_sk_peninjauan">SK Peninjauan Masa Kerja (opsional)</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="perbaikan_items[]" id="perbaikan_skp" value="skp_1_tahun_terakhir">
+                            <label class="form-check-label" for="perbaikan_skp">SKP 1 tahun terakhir</label>
+                        </div>
+                        <small class="text-muted">Centang minimal satu item agar user hanya upload ulang bagian yang salah.</small>
+                    </div>
+                    <div class="form-group mb-2">
                         <label class="mb-1">Catatan perbaikan untuk pegawai <span class="text-danger">*</span></label>
                         <textarea name="catatan_admin" rows="3" class="form-control" required minlength="10" maxlength="1000" placeholder="Contoh: SK pangkat tidak terbaca, mohon upload ulang file legalisir yang jelas.">{{ old('catatan_admin', $pengajuan->catatan_admin) }}</textarea>
-                        <small class="text-muted">Setelah ditolak, pengajuan akan kembali ke pegawai untuk upload ulang berkas perbaikan.</small>
                     </div>
                     <button class="btn btn-danger" onclick="return confirm('Yakin menolak dan mengembalikan pengajuan ini ke pegawai?')">
                         Simpan Penolakan
@@ -190,4 +262,25 @@
         </div>
     @endif
 </div>
+
+<script>
+    (function () {
+        const cekAll = document.getElementById('cek_all_verifikasi');
+        const items = document.querySelectorAll('.verifikasi-item');
+        if (!cekAll || items.length === 0) return;
+
+        cekAll.addEventListener('change', function () {
+            items.forEach((item) => {
+                item.checked = cekAll.checked;
+            });
+        });
+
+        items.forEach((item) => {
+            item.addEventListener('change', function () {
+                const allChecked = Array.from(items).every((x) => x.checked);
+                cekAll.checked = allChecked;
+            });
+        });
+    })();
+</script>
 @endsection

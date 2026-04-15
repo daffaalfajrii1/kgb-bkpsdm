@@ -31,7 +31,7 @@
                     <th>Dinas/Instansi</th>
                     <th>Pangkat Terakhir</th>
                     <th>TMT Berkala Berikutnya</th>
-                    <th width="180">Aksi</th>
+                    <th width="250">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -53,6 +53,9 @@
                             <a href="{{ route('admin.hasil-kgb.create') }}" class="btn btn-success btn-sm">
                                 Upload Hasil
                             </a>
+                            <a href="{{ route('admin.pengajuan.show', $item->id) }}#formTolakPengajuan" class="btn btn-danger btn-sm">
+                                Reject
+                            </a>
                         </td>
                     </tr>
                 @empty
@@ -68,4 +71,5 @@
         {{ $pengajuans->withQueryString()->links() }}
     </div>
 </div>
+
 @endsection

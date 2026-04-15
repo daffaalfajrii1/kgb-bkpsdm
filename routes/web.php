@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminDisiplinPegawaiController;
 use App\Http\Controllers\Admin\AdminPegawaiSkpController;
 use App\Http\Controllers\Admin\PengajuanController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Pegawai\PegawaiAuthController;
 use App\Http\Controllers\Pegawai\PegawaiDashboardController;
 use App\Http\Controllers\Pegawai\PegawaiSkController;
@@ -21,6 +22,9 @@ Route::prefix('pegawai')->name('pegawai.')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/login', [PegawaiAuthController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [PegawaiAuthController::class, 'login']);
+
+        Route::get('/lupa-password', fn () => view('pegawai.forgot-password'))->name('password.request');
+        Route::post('/lupa-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
     });
 
     Route::middleware('pegawai')->group(function () {

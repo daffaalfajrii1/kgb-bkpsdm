@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="row mb-3">
-    <div class="col-lg-3 col-6">
+    <div class="col-lg-2 col-6">
         <div class="small-box bg-info">
             <div class="inner">
                 <h3>{{ $countSemua }}</h3>
@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <div class="col-lg-3 col-6">
+    <div class="col-lg-2 col-6">
         <div class="small-box bg-secondary">
             <div class="inner">
                 <h3>{{ $countDiajukan }}</h3>
@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <div class="col-lg-3 col-6">
+    <div class="col-lg-2 col-6">
         <div class="small-box bg-warning">
             <div class="inner">
                 <h3>{{ $countDiproses }}</h3>
@@ -50,7 +50,22 @@
         </div>
     </div>
 
-    <div class="col-lg-3 col-6">
+    <div class="col-lg-2 col-6">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>{{ $countDitolak }}</h3>
+                <p>Ditolak</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-ban"></i>
+            </div>
+            <a href="{{ route('admin.pengajuan.index', ['status' => 'ditolak']) }}" class="small-box-footer">
+                Filter Ditolak <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-2 col-6">
         <div class="small-box bg-success">
             <div class="inner">
                 <h3>{{ $countSelesai }}</h3>
@@ -141,7 +156,7 @@
                                 Detail
                             </a>
 
-                            @if ($item->status === 'diajukan')
+                            @if (in_array($item->status, ['diajukan', 'diproses']))
                                 <form action="{{ route('admin.pengajuan.proses', $item->id) }}" method="POST" style="display:inline-block;">
                                     @csrf
                                     @method('PATCH')
@@ -149,6 +164,10 @@
                                         Proses
                                     </button>
                                 </form>
+
+                                <a href="{{ route('admin.pengajuan.show', $item->id) }}#formTolakPengajuan" class="btn btn-danger btn-sm">
+                                    Reject
+                                </a>
                             @endif
 
                             @if ($item->status === 'diproses')
@@ -175,4 +194,5 @@
         {{ $pengajuans->withQueryString()->links() }}
     </div>
 </div>
+
 @endsection
