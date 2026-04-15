@@ -50,6 +50,7 @@
             {{-- Tombol login / dashboard hanya untuk pegawai di area publik --}}
             @if ($pegawaiLoggedIn)
                 <a href="{{ route('pegawai.dashboard') }}">Dashboard Pegawai</a>
+                <a href="{{ route('pegawai.profile.show') }}">Profil Pegawai</a>
             @else
                 <a href="{{ route('pegawai.login') }}">Login Pegawai</a>
             @endif
@@ -93,6 +94,7 @@
                 @if ($pegawaiLoggedIn ?? false)
                     <li><a href="{{ route('pegawai.pengajuan.create') }}">Pengajuan KGB</a></li>
                     <li><a href="{{ route('pegawai.dashboard') }}">Dashboard Pegawai</a></li>
+                    <li><a href="{{ route('pegawai.profile.show') }}">Profil Pegawai</a></li>
                 @else
                     <li><a href="{{ route('pegawai.login') }}">Pengajuan KGB</a></li>
                     <li><a href="{{ route('pegawai.login') }}">Login Pegawai</a></li>

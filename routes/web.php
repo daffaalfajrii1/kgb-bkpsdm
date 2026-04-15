@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PengajuanController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Pegawai\PegawaiAuthController;
 use App\Http\Controllers\Pegawai\PegawaiDashboardController;
+use App\Http\Controllers\Pegawai\PegawaiProfileController;
 use App\Http\Controllers\Pegawai\PegawaiSkController;
 use App\Http\Controllers\Pegawai\PegawaiPengajuanController;
 use App\Http\Controllers\Public\HomeController;
@@ -29,6 +30,8 @@ Route::prefix('pegawai')->name('pegawai.')->group(function () {
 
     Route::middleware('pegawai')->group(function () {
         Route::get('/dashboard', [PegawaiDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profil', [PegawaiProfileController::class, 'show'])->name('profile.show');
+        Route::patch('/profil/password', [PegawaiProfileController::class, 'updatePassword'])->name('profile.password.update');
 
         Route::get('/pengajuan', [PegawaiPengajuanController::class, 'index'])->name('pengajuan.index');
         Route::get('/pengajuan/create', [PegawaiPengajuanController::class, 'create'])->name('pengajuan.create');
