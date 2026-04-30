@@ -44,7 +44,6 @@
                 <tr>
                     <th>Nama</th>
                     <th>NIP</th>
-                    <th>Penilaian 1 tahun terakhir<br><span class="small font-weight-normal">(tahun tersimpan)</span></th>
                     <th>Predikat 1 tahun terakhir</th>
                     <th width="200">Aksi</th>
                 </tr>
@@ -58,7 +57,6 @@
                     <tr class="{{ $buruk ? 'table-warning' : '' }}">
                         <td>{{ $item->user?->name ?? '-' }}</td>
                         <td>{{ $item->user?->nip ?? '-' }}</td>
-                        <td class="text-nowrap">{{ $item->tahun_terbaru }}</td>
                         <td>{{ $p1 }}</td>
                         <td>
                             <a href="{{ route('admin.pegawai-skp.edit', $item) }}" class="btn btn-warning btn-sm">Edit</a>
@@ -71,7 +69,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center">Belum ada data SKP. Gunakan tombol &ldquo;Tambah&rdquo;.</td>
+                        <td colspan="4" class="text-center">Belum ada data SKP. Gunakan tombol &ldquo;Tambah&rdquo;.</td>
                     </tr>
                 @endforelse
             </tbody>
