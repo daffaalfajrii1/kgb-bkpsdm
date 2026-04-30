@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit SKP 2 Tahun Terakhir')
-@section('page_title', 'Edit SKP 2 Tahun Terakhir')
+@section('title', 'Edit SKP 1 Tahun Terakhir')
+@section('page_title', 'Edit SKP 1 Tahun Terakhir')
 
 @section('content')
 @include('admin.skp._catatan')
@@ -29,36 +29,20 @@
             </div>
 
             <div class="alert alert-light border py-2 small text-muted mb-3">
-                <strong class="text-secondary">Penilaian 2 tahun terakhir (otomatis):</strong>
-                tahun <strong>{{ $tahunOtomatisBaru }}</strong> dan <strong>{{ $tahunOtomatisLama }}</strong>.
+                <strong class="text-secondary">Penilaian 1 tahun terakhir (otomatis):</strong>
+                tahun <strong>{{ $tahunOtomatisBaru }}</strong>.
             </div>
 
-            @if ($periodeTersimpanBerbeda)
-                <div class="alert alert-warning py-2 small mb-3">
-                    Data yang tersimpan memakai periode
-                    <strong>{{ $skp->tahun_terbaru }} / {{ $skp->tahun_sebelumnya }}</strong>.
-                    Setelah simpan, periode mengikuti periode otomatis di atas.
-                </div>
-            @endif
-
-            @if ($predikatPerTahunBerbeda)
-                <div class="alert alert-warning py-2 small mb-3">
-                    Pada data lama, predikat per tahun berbeda
-                    ({{ $skp->predikat_terbaru }} / {{ $skp->predikat_sebelumnya }}).
-                    Pilih satu predikat untuk keduanya.
-                </div>
-            @endif
-
             <div class="form-group">
-                <label>Predikat 2 tahun terakhir</label>
-                <select name="predikat_2_tahun" class="form-control @error('predikat_2_tahun') is-invalid @enderror" required>
+                <label>Predikat 1 tahun terakhir</label>
+                <select name="predikat_1_tahun" class="form-control @error('predikat_1_tahun') is-invalid @enderror" required>
                     <option value="">— Pilih predikat —</option>
                     @foreach ($predikatOpsi as $opt)
-                        <option value="{{ $opt }}" @selected(old('predikat_2_tahun', $predikatDefaultForm) === $opt)>{{ $opt }}</option>
+                        <option value="{{ $opt }}" @selected(old('predikat_1_tahun', $skp->predikat_terbaru) === $opt)>{{ $opt }}</option>
                     @endforeach
                 </select>
-                @error('predikat_2_tahun')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                <small class="form-text text-muted">Pilihan: Baik, Buruk, Sangat Buruk — berlaku untuk kedua tahun dalam periode tersebut.</small>
+                @error('predikat_1_tahun')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                <small class="form-text text-muted">Pilihan: Butuh Perbaikan, Kurang, Sangat kurang, Tidak ada Predikat.</small>
             </div>
         </div>
 

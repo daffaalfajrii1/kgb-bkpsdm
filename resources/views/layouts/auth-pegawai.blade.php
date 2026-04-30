@@ -35,8 +35,8 @@
         }
     </style>
 </head>
-<body class="min-h-screen auth-gradient flex items-center justify-center px-4 py-8">
-<div class="w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+<body class="min-h-screen auth-gradient flex items-center justify-center px-4 py-6 sm:py-8">
+<div class="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
     <div class="hidden lg:flex auth-gradient text-white p-12 flex-col justify-center">
         <div class="flex items-center gap-4 mb-8">
             <img
@@ -79,7 +79,7 @@
         </div>
     </div>
 
-    <div class="bg-white flex items-center justify-center p-8 md:p-12">
+    <div class="bg-white flex items-center justify-center p-6 sm:p-8 md:p-12">
         <div class="w-full max-w-md">
             <div class="lg:hidden flex flex-col items-center text-center mb-8">
                 <img
@@ -95,6 +95,10 @@
         </div>
     </div>
 </div>
+<footer class="fixed bottom-0 left-0 right-0 text-center text-xs sm:text-sm text-white/85 px-4 py-2">
+    &copy; {{ date('Y') }} Diskominfo Rejang Lebong. All rights reserved.
+</footer>
+@stack('scripts')
 </body>
 </html>
 

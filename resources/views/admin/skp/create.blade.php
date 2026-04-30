@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Tambah SKP 2 Tahun Terakhir')
-@section('page_title', 'Tambah SKP 2 Tahun Terakhir')
+@section('title', 'Tambah SKP 1 Tahun Terakhir')
+@section('page_title', 'Tambah SKP 1 Tahun Terakhir')
 
 @section('content')
 @include('admin.skp._catatan')
@@ -28,20 +28,20 @@
             </div>
 
             <div class="alert alert-light border mb-3 py-2 small text-muted">
-                <strong class="text-secondary">Penilaian 2 tahun terakhir (otomatis):</strong>
-                tahun <strong>{{ $tahunOtomatisBaru }}</strong> dan <strong>{{ $tahunOtomatisLama }}</strong>.
+                <strong class="text-secondary">Penilaian 1 tahun terakhir (otomatis):</strong>
+                tahun <strong>{{ $tahunOtomatisBaru }}</strong>.
             </div>
 
             <div class="form-group">
-                <label>Predikat 2 tahun terakhir</label>
-                <select name="predikat_2_tahun" class="form-control @error('predikat_2_tahun') is-invalid @enderror" required>
+                <label>Predikat 1 tahun terakhir</label>
+                <select name="predikat_1_tahun" class="form-control @error('predikat_1_tahun') is-invalid @enderror" required>
                     <option value="">— Pilih predikat —</option>
                     @foreach ($predikatOpsi as $opt)
-                        <option value="{{ $opt }}" @selected(old('predikat_2_tahun') === $opt)>{{ $opt }}</option>
+                        <option value="{{ $opt }}" @selected(old('predikat_1_tahun') === $opt)>{{ $opt }}</option>
                     @endforeach
                 </select>
-                @error('predikat_2_tahun')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                <small class="form-text text-muted">Pilihan: Baik, Buruk, Sangat Buruk — berlaku untuk kedua tahun dalam periode tersebut.</small>
+                @error('predikat_1_tahun')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                <small class="form-text text-muted">Pilihan: Butuh Perbaikan, Kurang, Sangat kurang, Tidak ada Predikat.</small>
             </div>
         </div>
 

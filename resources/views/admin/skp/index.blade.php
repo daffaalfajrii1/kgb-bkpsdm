@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', 'SKP 2 Tahun Terakhir')
-@section('page_title', 'SKP 2 Tahun Terakhir')
+@section('title', 'Manajemen SKP (1 Tahun Terakhir)')
+@section('page_title', 'Manajemen SKP (1 Tahun Terakhir)')
 
 @section('content')
 @include('admin.skp._catatan')
 
 <div class="alert alert-light border small text-muted mb-3 py-2">
     <strong class="text-secondary">Periode otomatis saat ini:</strong>
-    tahun <strong>{{ $tAutoBaru }}</strong> dan <strong>{{ $tAutoLama }}</strong>.
+    tahun <strong>{{ $tAutoBaru }}</strong>.
 </div>
 
 <div class="card mb-3">
@@ -44,8 +44,8 @@
                 <tr>
                     <th>Nama</th>
                     <th>NIP</th>
-                    <th>Penilaian 2 tahun terakhir<br><span class="small font-weight-normal">(tahun tersimpan)</span></th>
-                    <th>Predikat 2 tahun terakhir</th>
+                    <th>Penilaian 1 tahun terakhir<br><span class="small font-weight-normal">(tahun tersimpan)</span></th>
+                    <th>Predikat 1 tahun terakhir</th>
                     <th width="200">Aksi</th>
                 </tr>
             </thead>
@@ -54,14 +54,12 @@
                     @php
                         $buruk = \App\Services\PegawaiAksesDisiplinService::skpMemblokirAkses($item);
                         $p1 = trim((string) $item->predikat_terbaru);
-                        $p2 = trim((string) $item->predikat_sebelumnya);
-                        $predikatTampil = $p1 === $p2 ? $p1 : ($p1.' / '.$p2);
                     @endphp
                     <tr class="{{ $buruk ? 'table-warning' : '' }}">
                         <td>{{ $item->user?->name ?? '-' }}</td>
                         <td>{{ $item->user?->nip ?? '-' }}</td>
-                        <td class="text-nowrap">{{ $item->tahun_terbaru }} / {{ $item->tahun_sebelumnya }}</td>
-                        <td>{{ $predikatTampil }}</td>
+                        <td class="text-nowrap">{{ $item->tahun_terbaru }}</td>
+                        <td>{{ $p1 }}</td>
                         <td>
                             <a href="{{ route('admin.pegawai-skp.edit', $item) }}" class="btn btn-warning btn-sm">Edit</a>
                             <form method="POST" action="{{ route('admin.pegawai-skp.destroy', $item) }}" class="d-inline" onsubmit="return confirm('Hapus data SKP pegawai ini?');">

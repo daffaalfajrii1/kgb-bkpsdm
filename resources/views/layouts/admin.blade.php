@@ -95,7 +95,7 @@
                     <li class="nav-item">
                         <a href="{{ route('admin.pegawai-skp.index') }}" class="nav-link {{ request()->routeIs('admin.pegawai-skp.*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-chart-line"></i>
-                            <p>SKP 2 Tahun Terakhir</p>
+                            <p>Manajemen SKP</p>
                         </a>
                     </li>
 

@@ -24,11 +24,11 @@
 </head>
 <body class="bg-gray-50">
 <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <a href="{{ route('home') }}" class="flex items-center gap-3">
+    <div class="max-w-7xl mx-auto px-4 py-3 md:py-4 flex justify-between items-center gap-3">
+        <a href="{{ route('home') }}" class="flex items-center gap-3 min-w-0">
     <img src="{{ asset('assets/img/logo-rejang-lebong.png') }}" alt="Logo Rejang Lebong" class="w-12 h-12 object-contain bg-white rounded-full p-1">
-    <div>
-        <div class="font-bold text-xl">Kenaikan Gaji Berkala ONLINE</div>
+    <div class="min-w-0">
+        <div class="font-bold text-base sm:text-lg md:text-xl truncate">Kenaikan Gaji Berkala ONLINE</div>
         <div class="text-xs opacity-90">Kabupaten Rejang Lebong</div>
     </div>
 </a>
@@ -54,6 +54,34 @@
             @else
                 <a href="{{ route('pegawai.login') }}">Login Pegawai</a>
             @endif
+            <a href="{{ url('/admin/login') }}">Login Admin</a>
+        </nav>
+
+        <button
+            type="button"
+            class="md:hidden inline-flex items-center justify-center rounded-lg border border-white/30 p-2 hover:bg-white/10"
+            data-mobile-menu-button
+            aria-controls="mobile-menu"
+            aria-expanded="false"
+            aria-label="Buka menu navigasi"
+        >
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <div id="mobile-menu" class="md:hidden hidden border-t border-white/20 px-4 py-3">
+        <nav class="flex flex-col gap-3 text-sm font-medium">
+            <a href="{{ route('home') }}">Beranda</a>
+
+            @if ($pegawaiLoggedIn)
+                <a href="{{ route('pegawai.pengajuan.create') }}">Pengajuan KGB</a>
+                <a href="{{ route('pegawai.dashboard') }}">Dashboard Pegawai</a>
+                <a href="{{ route('pegawai.profile.show') }}">Profil Pegawai</a>
+            @else
+                <a href="{{ route('pegawai.login') }}">Pengajuan KGB</a>
+                <a href="{{ route('pegawai.login') }}">Login Pegawai</a>
+            @endif
+            <a href="{{ url('/admin/login') }}">Login Admin</a>
         </nav>
     </div>
 </header>
@@ -107,8 +135,29 @@
             <p class="text-sm text-gray-300">Jam layanan: Senin - Jumat</p>
         </div>
     </div>
+    <div class="border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 py-4 text-center text-xs sm:text-sm text-gray-400">
+            &copy; {{ date('Y') }} Diskominfo Rejang Lebong. All rights reserved.
+        </div>
+    </div>
 </footer>
 
     @stack('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const button = document.querySelector('[data-mobile-menu-button]');
+            const menu = document.getElementById('mobile-menu');
+
+            if (!button || !menu) {
+                return;
+            }
+
+            button.addEventListener('click', function () {
+                const isExpanded = button.getAttribute('aria-expanded') === 'true';
+                button.setAttribute('aria-expanded', String(!isExpanded));
+                menu.classList.toggle('hidden');
+            });
+        });
+    </script>
 </body>
 </html>

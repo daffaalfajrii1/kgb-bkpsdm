@@ -24,7 +24,8 @@
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <table class="min-w-full text-sm">
+            <div class="overflow-x-auto">
+            <table class="min-w-[760px] w-full text-sm">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="text-left px-6 py-4">No</th>
@@ -58,6 +59,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="mt-4">

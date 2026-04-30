@@ -20,36 +20,7 @@ class AdminPegawaiSkpController extends Controller
     /** @return list<string> */
     private function predikatSkpPilihan(): array
     {
-        return ['Baik', 'Buruk', 'Sangat Buruk'];
-    }
-
-    /**
-     * Satu nilai predikat untuk form; sertakan nilai lama di DB jika di luar daftar standar.
-     *
-     * @return list<string>
-     */
-    private function predikatSkpPilihanUntukEdit(PegawaiSkpDuaTahun $skp): array
-    {
-        $base = $this->predikatSkpPilihan();
-        foreach ([$skp->predikat_terbaru, $skp->predikat_sebelumnya] as $v) {
-            $v = trim((string) $v);
-            if ($v !== '' && ! in_array($v, $base, true)) {
-                $base[] = $v;
-            }
-        }
-
-        return array_values(array_unique($base));
-    }
-
-    /**
-     * Nilai awal satu predikat untuk form edit (data lama bisa beda per tahun).
-     */
-    private function predikatGabungUntukFormEdit(PegawaiSkpDuaTahun $skp): string
-    {
-        $a = trim((string) $skp->predikat_terbaru);
-        $b = trim((string) $skp->predikat_sebelumnya);
-
-        return $a === $b ? $a : $a;
+        return ['Butuh Perbaikan', 'Kurang', 'Sangat kurang', 'Tidak ada Predikat'];
     }
 
     public function index(Request $request): View
@@ -66,10 +37,10 @@ class AdminPegawaiSkpController extends Controller
             });
         }
 
-        [$tAutoBaru, $tAutoLama] = PegawaiAksesDisiplinService::pasanganTahunSkpOtomatis();
+        [$tAutoBaru] = PegawaiAksesDisiplinService::pasanganTahunSkpOtomatis();
         $items = $query->orderByDesc('tahun_terbaru')->paginate(20)->withQueryString();
 
-        return view('admin.skp.index', compact('items', 'tAutoBaru', 'tAutoLama'));
+        return view('admin.skp.index', compact('items', 'tAutoBaru'));
     }
 
     public function create(): View
@@ -81,13 +52,12 @@ class AdminPegawaiSkpController extends Controller
             ->orderBy('name')
             ->get(['id', 'nip', 'name']);
 
-        [$tahunOtomatisBaru, $tahunOtomatisLama] = PegawaiAksesDisiplinService::pasanganTahunSkpOtomatis();
+        [$tahunOtomatisBaru] = PegawaiAksesDisiplinService::pasanganTahunSkpOtomatis();
         $predikatOpsi = $this->predikatSkpPilihan();
 
         return view('admin.skp.create', compact(
             'pegawais',
             'tahunOtomatisBaru',
-            'tahunOtomatisLama',
             'predikatOpsi'
         ));
     }
@@ -100,25 +70,25 @@ class AdminPegawaiSkpController extends Controller
 
         $validated = $request->validate([
             'user_id' => ['required', 'integer', Rule::exists('users', 'id')->where('role', 'pegawai')],
-            'predikat_2_tahun' => ['required', 'string', Rule::in($predikatList)],
+            'predikat_1_tahun' => ['required', 'string', Rule::in($predikatList)],
         ]);
 
-        [$tahunTerbaru, $tahunSebelumnya] = PegawaiAksesDisiplinService::pasanganTahunSkpOtomatis();
-        $predikat = $validated['predikat_2_tahun'];
+        [$tahunTerbaru] = PegawaiAksesDisiplinService::pasanganTahunSkpOtomatis();
+        $predikat = $validated['predikat_1_tahun'];
 
         PegawaiSkpDuaTahun::query()->updateOrCreate(
             ['user_id' => $validated['user_id']],
             [
                 'tahun_terbaru' => $tahunTerbaru,
                 'predikat_terbaru' => $predikat,
-                'tahun_sebelumnya' => $tahunSebelumnya,
+                'tahun_sebelumnya' => $tahunTerbaru,
                 'predikat_sebelumnya' => $predikat,
             ]
         );
 
         return redirect()
             ->route('admin.pegawai-skp.index')
-            ->with('success', 'Data SKP 2 tahun terakhir berhasil disimpan.');
+            ->with('success', 'Data SKP 1 tahun terakhir berhasil disimpan.');
     }
 
     public function edit(PegawaiSkpDuaTahun $pegawaiSkpDuaTahun): View
@@ -130,23 +100,14 @@ class AdminPegawaiSkpController extends Controller
             ->orderBy('name')
             ->get(['id', 'nip', 'name']);
 
-        [$tahunOtomatisBaru, $tahunOtomatisLama] = PegawaiAksesDisiplinService::pasanganTahunSkpOtomatis();
-        $predikatOpsi = $this->predikatSkpPilihanUntukEdit($pegawaiSkpDuaTahun);
-        $predikatDefaultForm = $this->predikatGabungUntukFormEdit($pegawaiSkpDuaTahun);
-        $predikatPerTahunBerbeda = trim((string) $pegawaiSkpDuaTahun->predikat_terbaru)
-            !== trim((string) $pegawaiSkpDuaTahun->predikat_sebelumnya);
-        $periodeTersimpanBerbeda = (int) $pegawaiSkpDuaTahun->tahun_terbaru !== $tahunOtomatisBaru
-            || (int) $pegawaiSkpDuaTahun->tahun_sebelumnya !== $tahunOtomatisLama;
+        [$tahunOtomatisBaru] = PegawaiAksesDisiplinService::pasanganTahunSkpOtomatis();
+        $predikatOpsi = $this->predikatSkpPilihan();
 
         return view('admin.skp.edit', [
             'skp' => $pegawaiSkpDuaTahun,
             'pegawais' => $pegawais,
             'tahunOtomatisBaru' => $tahunOtomatisBaru,
-            'tahunOtomatisLama' => $tahunOtomatisLama,
             'predikatOpsi' => $predikatOpsi,
-            'predikatDefaultForm' => $predikatDefaultForm,
-            'predikatPerTahunBerbeda' => $predikatPerTahunBerbeda,
-            'periodeTersimpanBerbeda' => $periodeTersimpanBerbeda,
         ]);
     }
 
@@ -154,11 +115,11 @@ class AdminPegawaiSkpController extends Controller
     {
         $this->authorize('update', $pegawaiSkpDuaTahun);
 
-        $predikatList = $this->predikatSkpPilihanUntukEdit($pegawaiSkpDuaTahun);
+        $predikatList = $this->predikatSkpPilihan();
 
         $validated = $request->validate([
             'user_id' => ['required', 'integer', Rule::exists('users', 'id')->where('role', 'pegawai')],
-            'predikat_2_tahun' => ['required', 'string', Rule::in($predikatList)],
+            'predikat_1_tahun' => ['required', 'string', Rule::in($predikatList)],
         ]);
 
         if ((int) $validated['user_id'] !== (int) $pegawaiSkpDuaTahun->user_id) {
@@ -173,20 +134,20 @@ class AdminPegawaiSkpController extends Controller
             }
         }
 
-        [$tahunTerbaru, $tahunSebelumnya] = PegawaiAksesDisiplinService::pasanganTahunSkpOtomatis();
-        $predikat = $validated['predikat_2_tahun'];
+        [$tahunTerbaru] = PegawaiAksesDisiplinService::pasanganTahunSkpOtomatis();
+        $predikat = $validated['predikat_1_tahun'];
 
         $pegawaiSkpDuaTahun->update([
             'user_id' => $validated['user_id'],
             'tahun_terbaru' => $tahunTerbaru,
             'predikat_terbaru' => $predikat,
-            'tahun_sebelumnya' => $tahunSebelumnya,
+            'tahun_sebelumnya' => $tahunTerbaru,
             'predikat_sebelumnya' => $predikat,
         ]);
 
         return redirect()
             ->route('admin.pegawai-skp.index')
-            ->with('success', 'Data SKP 2 tahun terakhir berhasil diperbarui.');
+            ->with('success', 'Data SKP 1 tahun terakhir berhasil diperbarui.');
     }
 
     public function destroy(PegawaiSkpDuaTahun $pegawaiSkpDuaTahun): RedirectResponse

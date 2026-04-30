@@ -19,12 +19,12 @@ class PegawaiAksesDisiplinService
         return $nip;
     }
 
-    public static function predikatBuruk(string $predikat): bool
+    public static function predikatMemblokir(string $predikat): bool
     {
         $n = mb_strtolower(trim($predikat));
         $n = preg_replace('/\s+/u', ' ', $n) ?? $n;
 
-        return in_array($n, ['buruk', 'sangat buruk'], true);
+        return in_array($n, ['butuh perbaikan', 'kurang', 'sangat kurang', 'tidak ada predikat'], true);
     }
 
     /**
@@ -59,21 +59,16 @@ class PegawaiAksesDisiplinService
             return false;
         }
 
-        return self::predikatBuruk($skp->predikat_terbaru)
-            || self::predikatBuruk($skp->predikat_sebelumnya);
+        return self::predikatMemblokir($skp->predikat_terbaru);
     }
 
     public static function alasanBlokirSkp(PegawaiSkpDuaTahun $skp): string
     {
         $parts = [];
-        if (self::predikatBuruk($skp->predikat_terbaru)) {
+        if (self::predikatMemblokir($skp->predikat_terbaru)) {
             $parts[] = "SKP {$skp->tahun_terbaru}: {$skp->predikat_terbaru}";
         }
-        if (self::predikatBuruk($skp->predikat_sebelumnya)) {
-            $parts[] = "SKP {$skp->tahun_sebelumnya}: {$skp->predikat_sebelumnya}";
-        }
-
-        return 'Predikat SKP 2 tahun terakhir buruk/sangat buruk: '.implode('; ', $parts);
+        return 'Predikat SKP 1 tahun terakhir memblokir login: '.implode('; ', $parts);
     }
 
     /**
@@ -82,19 +77,10 @@ class PegawaiAksesDisiplinService
     public static function pesanNotifikasiLoginDitolakSkp(PegawaiSkpDuaTahun $skp): string
     {
         $t1 = (int) $skp->tahun_terbaru;
-        $t2 = (int) $skp->tahun_sebelumnya;
         $p1 = trim((string) $skp->predikat_terbaru);
-        $p2 = trim((string) $skp->predikat_sebelumnya);
-
-        $rincianPredikat = $p1 === $p2
-            ? "Predikat 2 tahun terakhir: «{$p1}»."
-            : "Rincian periode: tahun {$t1} — «{$p1}»; tahun {$t2} — «{$p2}».";
-
-        return 'Anda tidak dapat masuk ke sistem karena hasil penilaian kinerja (SKP) pada 2 (dua) tahun penilaian terakhir '
-            .'mencakup predikat Buruk atau Sangat Buruk, sesuai data yang tercatat. '
-            .$rincianPredikat.' '
-            ."Periode yang tercatat: tahun {$t1} dan {$t2}. "
-            .'Silakan menghubungi BKPSDM apabila perlu klarifikasi.';
+        return 'Anda tidak dapat masuk ke sistem karena predikat SKP 1 (satu) tahun terakhir '
+            .'berada pada kategori yang memblokir akses. '
+            ."Periode: {$t1}. Rincian: {$t1} — {$p1}.";
     }
 
     /**
@@ -103,18 +89,13 @@ class PegawaiAksesDisiplinService
     public static function pesanNotifikasiPengajuanDitolakSkp(PegawaiSkpDuaTahun $skp): string
     {
         $t1 = (int) $skp->tahun_terbaru;
-        $t2 = (int) $skp->tahun_sebelumnya;
         $p1 = trim((string) $skp->predikat_terbaru);
-        $p2 = trim((string) $skp->predikat_sebelumnya);
+        $rincianPredikat = "Predikat tahun {$t1}: «{$p1}».";
 
-        $rincianPredikat = $p1 === $p2
-            ? "Predikat 2 tahun terakhir: «{$p1}»."
-            : "Rincian periode: tahun {$t1} — «{$p1}»; tahun {$t2} — «{$p2}».";
-
-        return 'Anda tidak dapat mengajukan KGB karena hasil penilaian kinerja (SKP) pada 2 (dua) tahun penilaian terakhir '
-            .'mencakup predikat Buruk atau Sangat Buruk, sesuai data yang tercatat. '
+        return 'Anda tidak dapat mengajukan KGB karena predikat SKP 1 (satu) tahun terakhir '
+            .'berada pada kategori yang memblokir akses. '
             .$rincianPredikat.' '
-            ."Periode yang tercatat: tahun {$t1} dan {$t2}. "
+            ."Periode yang tercatat: tahun {$t1}. "
             .'Silakan menghubungi BKPSDM apabila perlu klarifikasi.';
     }
 
@@ -163,11 +144,10 @@ class PegawaiAksesDisiplinService
 
         $hukuman = self::hukumanMemblokirLogin($user);
         if ($hukuman) {
-            $tmt = $hukuman->tmt_berlaku?->format('d/m/Y');
-            $tingkat = $hukuman->tingkat_hukuman;
+            $mulai = $hukuman->tmt_berlaku?->format('d/m/Y') ?? '-';
+            $selesai = $hukuman->tmt_selesai?->format('d/m/Y') ?? 'sekarang';
 
-            return "Anda tidak dapat masuk ke sistem karena sedang menjalani hukuman disiplin tingkat {$tingkat} "
-                ."(berlaku sejak {$tmt}). Silakan menghubungi BKPSDM apabila perlu klarifikasi.";
+            return "Anda tidak dapat masuk ke sistem karena sedang menjalani hukuman disiplin. Periode: {$mulai} s.d. {$selesai}.";
         }
 
         return null;
